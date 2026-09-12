@@ -105,15 +105,12 @@
         }
         .bottom-photo img {
             width: 100%;
-            max-width: 400px; /* 限制宽度，高度自然变小 */
+            max-width: 600px; /* 限制宽度，高度自然变小 */
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            /* 降低清晰度：模糊 + 降对比度 + 降亮度 */
-            filter: blur(1.5px) contrast(0.8) brightness(0.9);
-            opacity: 0.85;
+            opacity: 1;
         }
-
         @media (max-width: 600px) {
             header h1 { font-size: 1.6em; }
             section { padding: 20px; }

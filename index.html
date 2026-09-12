@@ -1,11 +1,372 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的个人主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>武昱 - 个人主页</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f7f9fc;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            padding: 50px 0 40px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.2em; margin-bottom: 8px; }
+        header p { opacity: 0.95; font-size: 1.05em; }
+        nav {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        nav a {
+            display: block;
+            padding: 12px 16px;
+            color: #1e3c72;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+        nav a:hover { background: #eef3fb; }
+        section {
+            background: #fff;
+            margin: 24px 0;
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        section h2 {
+            font-size: 1.4em;
+            color: #1e3c72;
+            border-left: 4px solid #2a5298;
+            padding-left: 12px;
+            margin-bottom: 18px;
+        }
+        h3 {
+            font-size: 1.1em;
+            color: #2a5298;
+            margin: 18px 0 8px;
+        }
+        ul { list-style: none; }
+        li { padding: 6px 0; }
+        .paper-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .paper-list li:last-child { border-bottom: none; }
+        .paper-list .title { font-weight: 600; }
+        .paper-list .meta { color: #555; font-size: 0.95em; }
+        .paper-list a { color: #2a5298; text-decoration: none; word-break: break-all; }
+        .paper-list a:hover { text-decoration: underline; }
+        .award-list li, .service-list li, .skill-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .award-list li:last-child, .service-list li:last-child, .skill-list li:last-child {
+            border-bottom: none;
+        }
+        .timeline-item {
+            margin-bottom: 12px;
+            padding-left: 16px;
+            border-left: 3px solid #2a5298;
+        }
+        .timeline-item .time {
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #888;
+            font-size: 0.9em;
+        }
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.6em; }
+            section { padding: 20px; }
+            nav a { padding: 10px 12px; font-size: 0.85em; }
+        }
+    </style>
 </head>
 <body>
-    <h1>欢迎来到我的个人主页</h1>
-    <p>这是我的第一个 GitHub Pages 网站。</p>
+
+<header>
+    <div class="container">
+        <h1>武昱</h1>
+        <p>教授 · 成都理工大学管理科学学院</p>
+        <p>运筹优化与机器学习</p>
+    </div>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#about">简介</a></li>
+        <li><a href="#education">教育</a></li>
+        <li><a href="#work">工作</a></li>
+        <li><a href="#research">研究兴趣</a></li>
+        <li><a href="#projects">科研项目</a></li>
+        <li><a href="#papers">论文</a></li>
+        <li><a href="#other">其他成果</a></li>
+        <li><a href="#awards">荣誉</a></li>
+        <li><a href="#service">学术服务</a></li>
+        <li><a href="#teaching">教学</a></li>
+        <li><a href="#skills">技能</a></li>
+        <li><a href="#contact">联系</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <!-- 个人简介 -->
+    <section id="about">
+        <h2>个人简介</h2>
+        <p>
+            武昱，管理学博士，成都理工大学管理科学学院教授，中共党员，科研部队复员干部，中国运筹协会终身会员，中国计算机协会（CCF）会员。
+            1986年10月生，甘肃会宁人。
+        </p>
+        <p style="margin-top:10px;">
+            多伦多大学联合培养管理学博士，本硕博分别毕业于西安交通大学、奥尔堡大学和中国科学院大学。
+            曾任解放军某科研部队工程师和美国匹兹堡大学 Research Associate。
+            主要从事运筹优化和机器学习理论及其应用相关的研究工作，曾应邀在英国埃塞克斯大学等国内外学术机构做报告。
+            研究成果发表于 COR、FSM、IJSSOL、IEEE T-ITS、JOCO、JITS、APJOR、JORSC、IET ITS、
+            《中国管理科学》、《计算机科学》、TAMC、ASE 等国内外一流学术期刊和国际学术会议，
+            且 95% 的研究成果同时以第一作者和通讯作者完成。
+        </p>
+        <p style="margin-top:10px;">
+            ORCID: <a href="https://orcid.org/0000-0001-5113-6563" target="_blank">0000-0001-5113-6563</a>
+        </p>
+    </section>
+
+    <!-- 教育经历 -->
+    <section id="education">
+        <h2>教育经历</h2>
+        <div class="timeline-item">
+            <div class="time">2014.9 — 2019.7</div>
+            <div>中国科学院大学 · 管理科学与工程 · 管理学博士</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2017.9 — 2018.9</div>
+            <div>多伦多大学罗特曼管理学院 · 联合培养博士研究生（导师：Igor Averbakh, Opher Baron, Andre Cire）</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2014.9 — 2016.6</div>
+            <div>丹麦奥尔堡大学 · 经济学与工商管理 · 理学硕士</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2005.9 — 2009.7</div>
+            <div>西安交通大学 · 机械工程及自动化 · 工学学士</div>
+        </div>
+    </section>
+
+    <!-- 工作经历 -->
+    <section id="work">
+        <h2>工作经历</h2>
+        <div class="timeline-item">
+            <div class="time">2025.3 — 今</div>
+            <div>成都理工大学管理科学学院 · 教授</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2024.11 — 2025.3</div>
+            <div>成都理工大学管理科学学院 · 讲师（珠峰计划引进人才）</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2019.10 — 2024.10</div>
+            <div>西南交通大学 交通运输与物流学院 物流管理系 · 讲师</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2018.10 — 2019.4</div>
+            <div>美国匹兹堡大学 工业工程系 · Research Associate（导师：Bo Zeng, Egon Balas (CMU)）</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">2009.7 — 2014.1</div>
+            <div>中国人民解放军某部队 · 优化算法设计和测控数据处理工程师</div>
+        </div>
+    </section>
+
+    <!-- 研究兴趣 -->
+    <section id="research">
+        <h2>研究兴趣</h2>
+        <ul>
+            <li><strong>管理科学方向：</strong>应用概率、整数规划、组合优化、机器学习、在线算法、近似算法等。</li>
+            <li><strong>运营管理方向：</strong>物流、交通、医疗和电子商务等领域中的调度、选址、路径、定价等问题。</li>
+            <li><strong>目前主要从事：</strong>（1）大规模复杂整数规划问题的求解；（2）不确定环境下序列决策问题的求解，聚焦于“维数灾难”克服的方法及其理论。</li>
+        </ul>
+    </section>
+
+    <!-- 科研项目 -->
+    <section id="projects">
+        <h2>科研项目</h2>
+        <ul>
+            <li><strong>企业横向：</strong>金石科技三维嵌套装箱算法研究，2024.11 — 2026.12，正在进行，主持。</li>
+            <li><strong>中央高校基本科研业务费项目：</strong>2682020CX44，城市上门取件服务中的动态优化策略研究，2020.01 — 2021.12，结题，主持。</li>
+            <li><strong>国家自然科学基金面上项目：</strong>两阶段网络DEA效率及其分解方法与应用研究，2017.01 — 2020.12，结题，参与。</li>
+        </ul>
+    </section>
+
+    <!-- 学术论文 -->
+    <section id="papers">
+        <h2>学术论文</h2>
+        <p style="color:#666; margin-bottom:16px; font-size:0.95em;">
+            本人加粗，通讯作者标注 *。
+        </p>
+        <ul class="paper-list">
+
+            <li>
+                <div class="title"><strong>武昱*</strong>，从百度伐谋看AI编程：统计推断时代的困境与出路，计算机科学，2026，53(11), forthcoming.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>, Yuchen Yang. From Statistical Code Generation to Correct-by-Construction AI Programming: A Basis-Function Composition Framework, accepted by the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE2026, ASYDE Workshop), DOI: <a href="https://doi.org/10.1145/3843777.3844528" target="_blank">10.1145/3843777.3844528</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>, A Customized Perfect Hashing Scheme for MDPs with Structured Set-Based State Representations: Achieving O(1) Query Complexity with Zero Memory Waste, Accepted by Journal of Combinatorial Optimization.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu</strong>，Chengjie Li*，Ming Jian, A More Realistic Variant of CVRP: Methodology and A Case Study, Journal of Intelligent Transportation Systems, 1–26. DOI: <a href="https://doi.org/10.1080/15472450.2025.2577742" target="_blank">10.1080/15472450.2025.2577742</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>, Xiaoping Qiu, A Lookup Table Design Method: Achieving O(1)-query Complexity and No Memory Waste, Lecture Notes in Computer Science 16084, 63-76. DOI: <a href="https://doi.org/10.1007/978-981-95-4839-2_6" target="_blank">10.1007/978-981-95-4839-2_6</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，A Dynamic and Stochastic Cumulative Capacitated Vehicle Routing Problem，Asia-Pacific Journal of Operational Research，2024. DOI: <a href="https://doi.org/10.1142/S0217595924500088" target="_blank">10.1142/S0217595924500088</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Bo Zeng, Ming Jian, ADP- and Rollout-based Dynamic Vehicle Routing for Pick-up Service via Budgeting Capacity, Flexible Services and Manufacturing Journal, 1-45，2024. DOI: <a href="https://doi.org/10.1007/s10696-024-09551-z" target="_blank">10.1007/s10696-024-09551-z</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Bo Zeng，Dynamic Parcel Pick-up Routing Problem with Prioritized Customers and Constrained Capacity via Lower-bound-based Rollout Approach, Computers and Operations Research, 154 (2023): 106176. DOI: <a href="https://doi.org/10.1016/j.cor.2023.106176" target="_blank">10.1016/j.cor.2023.106176</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Ming Jian, State Aggregation and Lower Bound-Based ADP Approach for Dynamic Pick-Up Routing Problem With Capacity Constraint，IEEE Transactions on Intelligent Transportation Systems，2024. DOI: <a href="https://doi.org/10.1109/TITS.2024.3357060" target="_blank">10.1109/TITS.2024.3357060</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Sequential learning based re-optimization approaches for less model-based dynamic pick-up routing problem, International Journal of Systems Science: Operations & Logistics. 11(1), 2024. DOI: <a href="https://doi.org/10.1080/23302674.2023.2291201" target="_blank">10.1080/23302674.2023.2291201</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Xiaoping Qiu*，GRASP-based request allocation and MDP-based vehicle routing in home pick-up service with service continuity consideration，IET Intelligent Transport Systems, 18(2), 2024. DOI: <a href="https://doi.org/10.1049/itr2.12454" target="_blank">10.1049/itr2.12454</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>, Bo Zeng, Properties related with conditional expectation for a non-homogeneous Poisson Process, Journal of the Operations Research Society of China, 2024. DOI: <a href="https://doi.org/10.1007/s40305-023-00527-8" target="_blank">10.1007/s40305-023-00527-8</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu*</strong>，Analysis on Decision Making for Secretary Problem with partial Look-ahead Privilege, International Journal of Mathematics in Operational Research, 27(3), 2024, 305-316. DOI: <a href="https://doi.org/10.1504/IJMOR.2024.138054" target="_blank">10.1504/IJMOR.2024.138054</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>Yu Wu</strong>，Bo Zeng，Siming Huang*，A dynamic strategy for home pick-up service with uncertain customer requests and its implementation. Sustainability, 11(7), 2019. DOI: <a href="https://doi.org/10.3390/su11072060" target="_blank">10.3390/su11072060</a>.</div>
+            </li>
+
+            <li>
+                <div class="title"><strong>武昱*</strong>, 黄思明. 超大规模线性规划的稀疏存储和预处理中比例行的检测和处理方法. 中国管理科学, 2017, 25(10): 100-108. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2017.10.011" target="_blank">10.16381/j.cnki.issn1003-207x.2017.10.011</a>.</div>
+            </li>
+
+            <li>
+                <div class="title">胡艳杰, 黄思明, N.Adrien, <strong>武昱</strong>. 对偶性在线性规划预处理中的应用分析. 中国管理科学, 2016, 24(12): 117-126. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2016.12.014" target="_blank">10.16381/j.cnki.issn1003-207x.2016.12.014</a>.</div>
+            </li>
+
+        </ul>
+    </section>
+
+    <!-- 其他学术成果 -->
+    <section id="other">
+        <h2>其他学术成果</h2>
+        <ul class="award-list">
+            <li><strong>武昱</strong>(1/4): 外测系统精度鉴定综合处理软件, 中国人民解放军第二十一试验训练基地, 科技进步一等奖, 2011.</li>
+            <li><strong>武昱</strong>(1/2): 中国管理科学第十八届学术年会优秀报告论文奖, 中国优选法统筹法与经济学研究会, 2016.</li>
+            <li>黄思明, <strong>武昱</strong>: 基于变方向乘子法的大规模线性规划求解软件, 2019SR0674376, 2019 (软件著作权).</li>
+        </ul>
+    </section>
+
+    <!-- 荣誉奖励 -->
+    <section id="awards">
+        <h2>荣誉奖励</h2>
+        <ul class="award-list">
+            <li>2023年西南交通大学“百篇优秀本科毕业设计（论文）”（指导教师）</li>
+            <li>2022年四川省第二届大学生物流设计大赛一等奖（优秀指导教师奖）</li>
+            <li>西南交通大学高考招生宣传“先进个人”</li>
+            <li>2021年第六届日日顺创客训练营“金牌老师”</li>
+            <li>2021年第七届全国大学生物流设计大赛一等奖（优秀指导教师）</li>
+            <li>2017年国家留学基金委公派留学奖学金</li>
+            <li>2014年全国研究生数学建模大赛三等奖（队长）</li>
+            <li>2013年中国控制会议（CCC2013）分会场 Co-chair</li>
+            <li>解放军某部队某技术室集体二等功</li>
+            <li>全国大学生数学建模大赛二等奖</li>
+            <li>西安交通大学程序设计大赛银奖（非计算机专业第一名）</li>
+            <li>西安交通大学“社会活动积极分子”荣誉称号</li>
+            <li>西安交通大学法士特奖学金</li>
+        </ul>
+    </section>
+
+    <!-- 学术服务 -->
+    <section id="service">
+        <h2>学术服务</h2>
+        <ul class="service-list">
+            <li>担任 Transportation Science、EJOR、IEEE Transactions on Cybernetics、IJEST、IJITDM、IEEE Intelligent Transportation Systems Magazine、Industrial Management & Data Systems、IEEE Access、Computers & Operations Research、IET Intelligent Transportation Systems、CASE、IEEE T-ITS 等期刊及国际会议审稿人。</li>
+        </ul>
+    </section>
+
+    <!-- 教学及学生指导 -->
+    <section id="teaching">
+        <h2>教学及学生指导</h2>
+        <ul>
+            <li>二年级本科生《机器学习》课程、三年级本科生《物流系统分析（英文）》课程和《大数据分析》课程、学术型研究生《学术素养》课程中的“研究问题”和“研究方法”两个模块、研究生课程《工程管理前沿》。</li>
+            <li>2023年指导三位本科生毕业设计，三人均获得组内优秀（20%），其中一人获得西南交大百篇本科生优秀毕业设计（10/547）。</li>
+            <li>2023年指导SRTP项目两项，一项省级项目，一项校级项目；指导学生参加大学生物流设计大赛，分别获得国家一等奖和四川省一等奖。</li>
+        </ul>
+    </section>
+
+    <!-- 工程技能 -->
+    <section id="skills">
+        <h2>工程技能</h2>
+        <ul class="skill-list">
+            <li>精通线性规划、整数规划、动态规划、列生成等运筹优化精确求解方法，以及遗传算法、深度学习等启发式求解方法。</li>
+            <li>有实际运筹优化项目经验，能够处理大规模数据和复杂计算问题，能够将复杂问题转化为可操作的算法模型。</li>
+            <li>具有优秀的编程能力，熟悉 Python、C++、Java 等编程语言，熟练使用 MATLAB、CPLEX、Ortools 等优化工具。</li>
+            <li>具备良好的团队协作精神，能够有效沟通和解释复杂的优化概念给非技术团队。</li>
+        </ul>
+    </section>
+
+    <!-- 联系方式 -->
+    <section id="contact">
+        <h2>联系方式</h2>
+        <p>邮箱：<a href="mailto:wuyu14@mails.ucas.edu.cn">wuyu14@mails.ucas.edu.cn</a></p>
+        <p>电话：17844561863</p>
+        <p>ORCID：<a href="https://orcid.org/0000-0001-5113-6563" target="_blank">0000-0001-5113-6563</a></p>
+        <p>单位主页：<a href="https://faculty.cdut.edu.cn/wuyu/zh_CN/index.htm" target="_blank">成都理工大学个人主页</a></p>
+    </section>
+
+</div>
+
+<footer>
+    <div class="container">
+        © 2026 武昱 · Powered by GitHub Pages
+    </div>
+</footer>
+
 </body>
 </html>

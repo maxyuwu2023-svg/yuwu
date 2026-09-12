@@ -13,8 +13,34 @@
             background: #f7f9fc;
         }
         .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+        /* 顶部照片与渐变过渡 */
+        .top-photo {
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            position: relative;
+        }
+        .top-photo img {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+        .top-photo::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 180px;
+            background: linear-gradient(to bottom, rgba(30,60,114,0) 0%, rgba(30,60,114,1) 100%);
+            pointer-events: none;
+        }
+
         header {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
             color: #fff;
             padding: 50px 0 40px;
             text-align: center;
@@ -104,6 +130,11 @@
 </head>
 <body>
 
+<!-- 顶部照片：请确认图片路径是否正确，如果放在根目录，改成 src="einstein.jpg" -->
+<div class="top-photo">
+    <img src="images/einstein.jpg" alt="在多伦多大学与爱因斯坦合影">
+</div>
+
 <header>
     <div class="container">
         <h1>武昱</h1>
@@ -135,7 +166,7 @@
             武昱，加拿大多伦多大学联合培养管理学博士，成都理工大学管理科学学院教授，中共党员，科研部队复员干部，中国运筹协会终身会员，中国计算机协会（CCF）会员。本硕博分别毕业于西安交通大学、奥尔堡大学和中国科学院大学。曾任解放军某科研部队工程师和美国匹兹堡大学 Research Associate。主要从事运筹优化和机器学习理论及其应用相关的研究工作，曾应邀在英国埃塞克斯大学等国内外学术机构做报告。
             研究成果发表于 COR、FSM、IJSSOL、IEEE T-ITS、JOCO、JITS、APJOR、JORSC、IET ITS、《中国管理科学》、《计算机科学》、TAMC、ASE 等国内外一流学术期刊和国际学术会议，
             且 95% 的研究成果同时以第一作者和通讯作者完成。
-       
+        </p>
     </section>
 
     <!-- 教育经历 -->
@@ -193,6 +224,7 @@
             <li><strong>目前主要从事：</strong>（1）大规模复杂整数规划问题的求解；（2）不确定环境下序列决策问题的求解，聚焦于“维数灾难”克服的方法及其理论。</li>
         </ul>
     </section>
+
     <!-- 学术论文 -->
     <section id="papers">
         <h2>学术论文</h2>
@@ -313,6 +345,7 @@
             <li>二年级本科生《机器学习》课程、三年级本科生《物流系统分析（英文）》课程和《大数据分析》课程、学术型研究生《学术素养》课程中的“研究问题”和“研究方法”两个模块、研究生课程《工程管理前沿》。2023年指导三位本科生毕业设计，三人均获得组内优秀（20%），其中一人获得西南交大百篇本科生优秀毕业设计（10/547）。2023年指导SRTP项目两项，一项省级项目，一项校级项目；指导学生参加大学生物流设计大赛，分别获得国家一等奖和四川省一等奖。</li>
         </ul>
     </section>
+
     <!-- 联系方式 -->
     <section id="contact">
         <h2>联系方式</h2>
@@ -326,6 +359,5 @@
         © 2026 武昱 · Powered by GitHub Pages
     </div>
 </footer>
-
 </body>
 </html>

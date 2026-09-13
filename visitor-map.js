@@ -10,9 +10,36 @@
     // 桌面端地图横向宽度比例
     const DESKTOP_MAP_WIDTH_RATIO = 0.84;
 
-    const host = document.getElementById("visitor-map");
-    const canvas = host && host.querySelector("canvas");
-    const summary = document.getElementById("visit-summary");
+    // 根据网页语言决定访问统计的显示语言
+    const isEnglish =
+        document.documentElement.lang
+            .toLowerCase()
+            .startsWith("en");
+
+    const locale =
+        isEnglish ? "en" : "zh-CN";
+
+    const regionNames =
+        typeof Intl.DisplayNames === "function"
+            ? new Intl.DisplayNames(
+                  [locale],
+                  { type: "region" }
+              )
+            : null;
+
+    const host =
+        document.getElementById(
+            "visitor-map"
+        );
+
+    const canvas =
+        host &&
+        host.querySelector("canvas");
+
+    const summary =
+        document.getElementById(
+            "visit-summary"
+        );
 
     if (
         !host ||
@@ -23,9 +50,14 @@
         return;
     }
 
-    const ctx = canvas.getContext("2d");
-    const projection = d3.geoNaturalEarth1();
-    const path = d3.geoPath(projection, ctx);
+    const ctx =
+        canvas.getContext("2d");
+
+    const projection =
+        d3.geoNaturalEarth1();
+
+    const path =
+        d3.geoPath(projection, ctx);
 
     let land = null;
     let points = [];
@@ -43,22 +75,33 @@
     function requestRender() {
         if (!animationFrame) {
             animationFrame =
-                window.requestAnimationFrame(render);
+                window.requestAnimationFrame(
+                    render
+                );
         }
     }
 
     function resize() {
-        const rect = host.getBoundingClientRect();
+        const rect =
+            host.getBoundingClientRect();
 
-        width = Math.max(1, rect.width);
-        height = Math.max(1, rect.height);
-        dpr = Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
+        width =
+            Math.max(1, rect.width);
 
-        canvas.width = Math.round(width * dpr);
-        canvas.height = Math.round(height * dpr);
+        height =
+            Math.max(1, rect.height);
+
+        dpr =
+            Math.min(
+                window.devicePixelRatio || 1,
+                2
+            );
+
+        canvas.width =
+            Math.round(width * dpr);
+
+        canvas.height =
+            Math.round(height * dpr);
 
         ctx.setTransform(
             dpr,
@@ -72,14 +115,18 @@
         projection.fitExtent(
             [
                 [18, 16],
-                [width - 18, height - 16]
+                [
+                    width - 18,
+                    height - 16
+                ]
             ],
             { type: "Sphere" }
         );
 
-        const sphereBounds = path.bounds({
-            type: "Sphere"
-        });
+        const sphereBounds =
+            path.bounds({
+                type: "Sphere"
+            });
 
         const projectedWidth =
             sphereBounds[1][0] -
@@ -93,14 +140,19 @@
 
         const targetWidth =
             width > 700
-                ? width * DESKTOP_MAP_WIDTH_RATIO
+                ? width *
+                  DESKTOP_MAP_WIDTH_RATIO
                 : width - 24;
 
-        mapStretchX = Math.max(
-            1,
-            targetWidth /
-                Math.max(1, projectedWidth)
-        );
+        mapStretchX =
+            Math.max(
+                1,
+                targetWidth /
+                    Math.max(
+                        1,
+                        projectedWidth
+                    )
+            );
 
         requestRender();
     }
@@ -109,10 +161,11 @@
         longitude,
         latitude
     ) {
-        const projected = projection([
-            longitude,
-            latitude
-        ]);
+        const projected =
+            projection([
+                longitude,
+                latitude
+            ]);
 
         if (!projected) {
             return null;
@@ -139,7 +192,9 @@
                     1013904223
                 ) >>> 0;
 
-            return value / 4294967296;
+            return (
+                value / 4294967296
+            );
         };
     }
 
@@ -149,18 +204,23 @@
 
         ctx.save();
 
-        const starCount = Math.max(
-            90,
-            Math.round(width / 9)
-        );
+        const starCount =
+            Math.max(
+                90,
+                Math.round(width / 9)
+            );
 
         for (
             let index = 0;
             index < starCount;
             index += 1
         ) {
-            const x = random() * width;
-            const y = random() * height;
+            const x =
+                random() * width;
+
+            const y =
+                random() * height;
+
             const radius =
                 random() * 0.85 + 0.2;
 
@@ -193,20 +253,34 @@
 
         ctx.save();
 
-        ctx.translate(mapCenterX, 0);
-        ctx.scale(mapStretchX, 1);
-        ctx.translate(-mapCenterX, 0);
+        ctx.translate(
+            mapCenterX,
+            0
+        );
 
-        // 地图内部的海洋背景
+        ctx.scale(
+            mapStretchX,
+            1
+        );
+
+        ctx.translate(
+            -mapCenterX,
+            0
+        );
+
+        // 绘制海洋区域
         ctx.beginPath();
-        path({ type: "Sphere" });
+
+        path({
+            type: "Sphere"
+        });
 
         ctx.fillStyle =
             "rgba(1, 7, 16, 0.96)";
 
         ctx.fill();
 
-        // 陆地
+        // 绘制陆地
         ctx.beginPath();
         path(land);
 
@@ -228,10 +302,12 @@
             "rgba(15, 59, 83, 0.98)"
         );
 
-        ctx.fillStyle = landGradient;
+        ctx.fillStyle =
+            landGradient;
+
         ctx.fill();
 
-        // 国家边界
+        // 绘制国家边界
         ctx.strokeStyle =
             "rgba(147, 222, 244, 0.58)";
 
@@ -244,34 +320,36 @@
     /*
      * 根据访问次数计算红点大小。
      *
-     * 采用对数增长：
-     * 访问次数越多，红点越大；
-     * 同时避免访问量很高时红点过度膨胀。
+     * 一个地区只显示一个红点。
+     * 访问次数越多，红点越大。
      *
-     * 红点半径最小约 3.45px，
-     * 最大限制为 10px。
+     * 使用对数增长，防止访问次数
+     * 很高时红点变得过大。
      */
     function dotRadius(views) {
-        const count = Math.max(
-            1,
-            Number(views) || 1
-        );
+        const count =
+            Math.max(
+                1,
+                Number(views) || 1
+            );
 
         return (
             2.3 +
             Math.min(
                 7.7,
-                Math.log2(count + 1) *
-                    1.15
+                Math.log2(
+                    count + 1
+                ) * 1.15
             )
         );
     }
 
     function drawVisitDots(point) {
-        const center = projectPoint(
-            point.longitude,
-            point.latitude
-        );
+        const center =
+            projectPoint(
+                point.longitude,
+                point.latitude
+            );
 
         if (!center) {
             return;
@@ -282,7 +360,7 @@
 
         ctx.save();
 
-        // 一个地区只显示一个纯红点
+        // 纯红点，没有光晕
         ctx.fillStyle =
             "rgba(255, 47, 57, 0.96)";
 
@@ -298,8 +376,7 @@
 
         ctx.fill();
 
-        // 很细的浅色边界，
-        // 只是提高辨识度，不是光晕
+        // 细边框用于增强辨识度
         ctx.strokeStyle =
             "rgba(255, 225, 225, 0.82)";
 
@@ -319,7 +396,6 @@
             height
         );
 
-        // 页面顶部深色背景
         const ocean =
             ctx.createLinearGradient(
                 0,
@@ -355,8 +431,9 @@
         drawStars();
         drawMap();
 
-        // 每个访问位置绘制一个红点
-        points.forEach(drawVisitDots);
+        points.forEach(
+            drawVisitDots
+        );
     }
 
     function updateSummary() {
@@ -370,43 +447,45 @@
         const countryTotals =
             new Map();
 
-        points.forEach((point) => {
-            const code =
-                String(
-                    point.country || ""
-                ).toUpperCase() ||
-                "未知地区";
+        points.forEach(
+            (point) => {
+                const code =
+                    String(
+                        point.country ||
+                        ""
+                    )
+                        .toUpperCase() ||
+                    "UNKNOWN";
 
-            const visits =
-                Number(point.views) || 0;
+                const visits =
+                    Number(
+                        point.views
+                    ) || 0;
 
-            countryTotals.set(
-                code,
-                (
-                    countryTotals.get(
-                        code
-                    ) || 0
-                ) + visits
-            );
-        });
-
-        const regionNames =
-            typeof Intl.DisplayNames ===
-            "function"
-                ? new Intl.DisplayNames(
-                      ["zh-CN"],
-                      { type: "region" }
-                  )
-                : null;
-
-        const rankedCountries = [
-            ...countryTotals.entries()
-        ].sort(
-            (first, second) =>
-                second[1] - first[1]
+                countryTotals.set(
+                    code,
+                    (
+                        countryTotals.get(
+                            code
+                        ) || 0
+                    ) + visits
+                );
+            }
         );
 
-        // 最多显示访问量最高的7个国家
+        const rankedCountries =
+            [
+                ...countryTotals.entries()
+            ].sort(
+                (
+                    first,
+                    second
+                ) =>
+                    second[1] -
+                    first[1]
+            );
+
+        // 只显示访问量最高的7个国家
         const visibleCountries =
             rankedCountries
                 .slice(0, 7)
@@ -417,8 +496,12 @@
                     ]) => {
                         const name =
                             code ===
-                            "未知地区"
-                                ? code
+                            "UNKNOWN"
+                                ? (
+                                      isEnglish
+                                          ? "Unknown"
+                                          : "未知地区"
+                                  )
                                 : (
                                       regionNames?.of(
                                           code
@@ -426,16 +509,25 @@
                                       code
                                   );
 
+                        if (isEnglish) {
+                            return (
+                                `${name} ` +
+                                `${visits.toLocaleString(
+                                    locale
+                                )}`
+                            );
+                        }
+
                         return (
                             `${name} ` +
                             `${visits.toLocaleString(
-                                "zh-CN"
+                                locale
                             )}次`
                         );
                     }
                 );
 
-        // 超过7个国家的访问量合并为“其他”
+        // 其他国家合并显示
         const remainingVisits =
             rankedCountries
                 .slice(7)
@@ -449,17 +541,37 @@
                     0
                 );
 
-        if (remainingVisits > 0) {
-            visibleCountries.push(
-                `其他 ${remainingVisits.toLocaleString(
-                    "zh-CN"
-                )}次`
-            );
+        if (
+            remainingVisits > 0
+        ) {
+            if (isEnglish) {
+                visibleCountries.push(
+                    `Other ${remainingVisits.toLocaleString(
+                        locale
+                    )}`
+                );
+            } else {
+                visibleCountries.push(
+                    `其他 ${remainingVisits.toLocaleString(
+                        locale
+                    )}次`
+                );
+            }
         }
 
-        summary.textContent =
-            `全球访问足迹 · ` +
-            visibleCountries.join(" · ");
+        if (isEnglish) {
+            summary.textContent =
+                `Global visitor footprint · ` +
+                visibleCountries.join(
+                    " · "
+                );
+        } else {
+            summary.textContent =
+                `全球访问足迹 · ` +
+                visibleCountries.join(
+                    " · "
+                );
+        }
 
         summary.hidden = false;
     }
@@ -491,63 +603,113 @@
             tooltip.className =
                 "map-tooltip";
 
-            host.appendChild(tooltip);
+            host.appendChild(
+                tooltip
+            );
         }
+
+        const countryCode =
+            String(
+                point.country || ""
+            ).toUpperCase();
+
+        const countryName =
+            countryCode
+                ? (
+                      regionNames?.of(
+                          countryCode
+                      ) ||
+                      countryCode
+                  )
+                : "";
 
         const place =
             [
                 point.city,
-                point.country
+                countryName
             ]
                 .filter(Boolean)
                 .join(" · ") ||
-            "未知地区";
+            (
+                isEnglish
+                    ? "Unknown location"
+                    : "未知地区"
+            );
 
         const visits =
-            Number(point.views) || 0;
+            Number(
+                point.views
+            ) || 0;
 
-        tooltip.textContent =
-            `${place}：` +
-            `${visits.toLocaleString(
-                "zh-CN"
-            )} 次访问`;
+        if (isEnglish) {
+            tooltip.textContent =
+                `${place}: ` +
+                `${visits.toLocaleString(
+                    locale
+                )} ` +
+                `visit${
+                    visits === 1
+                        ? ""
+                        : "s"
+                }`;
+        } else {
+            tooltip.textContent =
+                `${place}：` +
+                `${visits.toLocaleString(
+                    locale
+                )} 次访问`;
+        }
 
-        tooltip.style.left = `${x}px`;
-        tooltip.style.top = `${y}px`;
+        tooltip.style.left =
+            `${x}px`;
+
+        tooltip.style.top =
+            `${y}px`;
     }
 
     function findNearest(x, y) {
         let nearest = null;
-        let bestDistance = Infinity;
+        let bestDistance =
+            Infinity;
 
-        points.forEach((point) => {
-            const projected =
-                projectPoint(
-                    point.longitude,
-                    point.latitude
-                );
+        points.forEach(
+            (point) => {
+                const projected =
+                    projectPoint(
+                        point.longitude,
+                        point.latitude
+                    );
 
-            if (!projected) {
-                return;
+                if (!projected) {
+                    return;
+                }
+
+                const distance =
+                    Math.hypot(
+                        projected[0] -
+                            x,
+                        projected[1] -
+                            y
+                    );
+
+                const clickableRadius =
+                    dotRadius(
+                        point.views
+                    ) + 8;
+
+                if (
+                    distance <
+                        bestDistance &&
+                    distance <=
+                        clickableRadius
+                ) {
+                    bestDistance =
+                        distance;
+
+                    nearest = point;
+                }
             }
-
-            const distance = Math.hypot(
-                projected[0] - x,
-                projected[1] - y
-            );
-
-            const clickableRadius =
-                dotRadius(point.views) + 8;
-
-            if (
-                distance < bestDistance &&
-                distance <=
-                    clickableRadius
-            ) {
-                bestDistance = distance;
-                nearest = point;
-            }
-        });
+        );
 
         return nearest;
     }
@@ -567,10 +729,11 @@
                     rect.top
             };
 
-            const point = findNearest(
-                pointer.x,
-                pointer.y
-            );
+            const point =
+                findNearest(
+                    pointer.x,
+                    pointer.y
+                );
 
             setTooltip(
                 point,
@@ -594,25 +757,58 @@
         }
 
         try {
-            const apiRoot =
-                VISITOR_API_URL.replace(
-                    /\/$/,
-                    ""
-                );
+            /*
+             * 中文和英文页面共享 sessionStorage。
+             * 在同一次浏览会话中切换语言，
+             * 不会重复增加访问次数。
+             */
+            let alreadyRecorded =
+                false;
 
-            const response = await fetch(
-                `${apiRoot}/api/visit`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: "{}",
-                    mode: "cors",
-                    credentials: "omit"
-                }
-            );
+            try {
+                alreadyRecorded =
+                    sessionStorage.getItem(
+                        "visitor-map-recorded"
+                    ) === "1";
+            } catch (_) {
+                // 隐私模式下仍可正常加载。
+            }
+
+            const endpoint =
+                alreadyRecorded
+                    ? "/api/visits"
+                    : "/api/visit";
+
+            const response =
+                await fetch(
+                    `${VISITOR_API_URL.replace(
+                        /\/$/,
+                        ""
+                    )}${endpoint}`,
+                    {
+                        method:
+                            alreadyRecorded
+                                ? "GET"
+                                : "POST",
+
+                        headers:
+                            alreadyRecorded
+                                ? undefined
+                                : {
+                                      "Content-Type":
+                                          "application/json"
+                                  },
+
+                        body:
+                            alreadyRecorded
+                                ? undefined
+                                : "{}",
+
+                        mode: "cors",
+                        credentials:
+                            "omit"
+                    }
+                );
 
             if (!response.ok) {
                 throw new Error(
@@ -623,8 +819,21 @@
             const data =
                 await response.json();
 
+            if (!alreadyRecorded) {
+                try {
+                    sessionStorage.setItem(
+                        "visitor-map-recorded",
+                        "1"
+                    );
+                } catch (_) {
+                    // 不影响地图显示。
+                }
+            }
+
             points =
-                Array.isArray(data.points)
+                Array.isArray(
+                    data.points
+                )
                     ? data.points
                     : [];
 
@@ -644,15 +853,19 @@
     }
 
     const observer =
-        new ResizeObserver(() => {
-            resize();
-        });
+        new ResizeObserver(
+            () => {
+                resize();
+            }
+        );
 
     observer.observe(host);
     resize();
 
     Promise.all([
-        fetch(WORLD_DATA_URL).then(
+        fetch(
+            WORLD_DATA_URL
+        ).then(
             (response) => {
                 if (!response.ok) {
                     throw new Error(
@@ -666,10 +879,12 @@
         loadVisits()
     ])
         .then(([world]) => {
-            land = topojson.feature(
-                world,
-                world.objects.countries
-            );
+            land =
+                topojson.feature(
+                    world,
+                    world.objects
+                        .countries
+                );
 
             requestRender();
         })
@@ -693,7 +908,8 @@
                     animationFrame
                 );
 
-                animationFrame = null;
+                animationFrame =
+                    null;
             } else if (
                 !document.hidden &&
                 !animationFrame

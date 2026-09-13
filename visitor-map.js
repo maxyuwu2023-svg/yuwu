@@ -461,7 +461,7 @@
             2.3 +
             Math.min(
                 7.7,
-                Math.log2(count + 1) * 1.15
+                Math.log2(count + 1) * 0.65
             )
         );
     }

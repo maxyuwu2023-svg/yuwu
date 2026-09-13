@@ -1,105 +1,59 @@
 (function () {
     "use strict";
 
-    const VISITOR_API_URL =
-        "https://yuwu-visitor-map-api.maxyuwu2023.workers.dev";
-
-    const WORLD_DATA_URL =
-        "assets/vendor/countries-110m.json";
-
+    const VISITOR_API_URL = "https://yuwu-visitor-map-api.maxyuwu2023.workers.dev";
+    const WORLD_DATA_URL = "assets/vendor/countries-110m.json";
     const DESKTOP_MAP_WIDTH_RATIO = 0.84;
 
-    //    const VISIT_CACHE_KEY =
-        "visitor-map-last-visits-v1";
+    const VISIT_CACHE_KEY = "visitor-map-last-visits-v1";
+    const WORLD_CACHE_KEY = "visitor-map-last-world-v1";
+    const SNAPSHOT_CACHE_KEY = "visitor-map-last-snapshot-v1";
 
-    const WORLD_CACHE_KEY =
-        "visitor-map-last-world-v1";
+    const isEnglish = document.documentElement.lang
+        .toLowerCase()
+        .startsWith("en");
 
-    const SNAPSHOT_CACHE_KEY =
-        "visitor-map-last-snapshot-v1";
+    const locale = isEnglish ? "en" : "zh-CN";
 
-    const isEnglish =
-        document.documentElement.lang
-            .toLowerCase()
-            .startsWith("en");
+    const regionNames = typeof Intl.DisplayNames === "function"
+        ? new Intl.DisplayNames([locale], { type: "region" })
+        : null;
 
-    const locale =
-        isEnglish ? "en" : "zh-CN";
+    const host = document.getElementById("visitor-map");
+    const canvas = host && host.querySelector("canvas");
+    const summary = document.getElementById("visit-summary");
 
-    const regionNames =
-        typeof Intl.DisplayNames === "function"
-            ? new Intl.DisplayNames(
-                  [locale],
-                  { type: "region" }
-              )
-            : null;
-
-    const host =
-        document.getElementById(
-            "visitor-map"
-        );
-
-    const canvas =
-        host &&
-        host.querySelector("canvas");
-
-    const summary =
-        document.getElementById(
-            "visit-summary"
-        );
-
-    if (!host || !canvas) {
-        return;
-    }
+    if (!host || !canvas) return;
 
     /*
-     * 首先尝试读取最近一次成功绘制的地图快照。
-     * 即使绘图库或地图数据暂时加载失败，
-     * 也能显示上一次成功时的地图。
+     * 先读取最近一次成功绘制的地图快照。
+     * 如果地图脚本或地图数据加载失败，
+     * 这张快照会作为背景继续显示。
      */
     let hasCachedSnapshot = false;
 
     try {
-        const snapshot =
-            localStorage.getItem(
-                SNAPSHOT_CACHE_KEY
-            );
+        const snapshot = localStorage.getItem(SNAPSHOT_CACHE_KEY);
 
         if (snapshot) {
-            host.style.backgroundImage =
-                `url("${snapshot}")`;
-
-            host.style.backgroundSize =
-                "cover";
-
-            host.style.backgroundPosition =
-                "center";
-
+            host.style.backgroundImage = `url("${snapshot}")`;
+            host.style.backgroundSize = "cover";
+            host.style.backgroundPosition = "center";
             hasCachedSnapshot = true;
         }
     } catch (_) {
-        // 快照不可用时不影响页面其他内容。
+        // 快照缓存不可用时不影响页面其他内容。
     }
 
-    if (
-        !window.d3 ||
-        !window.topojson
-    ) {
-        return;
-    }
+    /*
+     * 如果绘图库没有加载成功，
+     * 仍保留上面的缓存地图背景。
+     */
+    if (!window.d3 || !window.topojson) return;
 
-    const ctx =
-        canvas.getContext("2d");
-
-    const projection =
-       =
-        d3.geoNaturalEarth1();
-
-    const path =
-        d3.geoPath(
-            projection,
-            ctx
-        );
+    const ctx = canvas.getContext("2d");
+    const projection = d3.geoNaturalEarth1();
+    const path = d3.geoPath(projection, ctx);
 
     let land = null;
     let points = [];
@@ -111,79 +65,44 @@
 
     let mapStretchX = 1;
     let mapCenterX = 0;
-
     let animationFrame = null;
-    let pointer = null;
     let snapshotTimer = null;
 
     function readCache(key) {
         try {
-            const value =
-                localStorage.getItem(key);
-
-            return value
-                ? JSON.parse(value)
-                : null;
+            const value = localStorage.getItem(key);
+            return value ? JSON.parse(value) : null;
         } catch (_) {
             return null;
         }
     }
 
-    function writeCache(
-        key,
-        value
-    ) {
+    function writeCache(key, value) {
         try {
             localStorage.setItem(
                 key,
                 JSON.stringify(value)
             );
         } catch (_) {
-            // 缓存失败不影响实时地图。
+            // 缓存不可用时不影响实时地图。
         }
     }
 
     function requestRender() {
         if (!animationFrame) {
-            animationFrame =
-                window.requestAnimationFrame(
-                    render
-                );
+            animationFrame = window.requestAnimationFrame(render);
         }
     }
 
     function resize() {
-        const rect =
-35:22 =
-            host.getBoundingClientRect();
+        const rect = host.getBoundingClientRect();
 
-        width =
-            Math.max(
-                1,
-                rect.width
-            );
+        width = Math.max(1, rect.width);
+        height = Math.max(1, rect.height);
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        height =
-            Math.max(
-                1,
-                rect.height
-            );
-
-        dpr =
-            Math.min(
-                window.devicePixelRatio || 1,
-                2
-            );
-
-        canvas.width =
-            Math.round(
-                width * dpr
-            );
-
-        canvas.height =
-            Math.round(
-                height * dpr
-            );
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
 
         ctx.setTransform(
             dpr,
@@ -197,18 +116,14 @@
         projection.fitExtent(
             [
                 [18, 16],
-                [
-                    width - 18,
-                    height - 16
-                ]
+                [width - 18, height - 16]
             ],
             { type: "Sphere" }
         );
 
-        const sphereBounds =
-            path.bounds({
-                type: "Sphere"
-            });
+        const sphereBounds = path.bounds({
+            type: "Sphere"
+        });
 
         const projectedWidth =
             sphereBounds[1][0] -
@@ -220,38 +135,26 @@
                 sphereBounds[1][0]
             ) / 2;
 
-        const targetWidth =
-            width > 700
-                ? width *
-                  DESKTOP_MAP_WIDTH_RATIO
-                : width - 24;
+        const targetWidth = width > 700
+            ? width * DESKTOP_MAP_WIDTH_RATIO
+            : width - 24;
 
-        mapStretchX =
-            Math.max(
-                1,
-                targetWidth /
-                    Math.max(
-                        1,
-                        projectedWidth
-                    )
-            );
+        mapStretchX = Math.max(
+            1,
+            targetWidth /
+                Math.max(1, projectedWidth)
+        );
 
         requestRender();
     }
 
-    function projectPoint(
-        longitude,
-        latitude
-    ) {
-        const projected =
-            projection([
-                longitude,
-                latitude
-            ]);
+    function projectPoint(longitude, latitude) {
+        const projected = projection([
+            longitude,
+            latitude
+        ]);
 
-        if (!projected) {
-            return null;
-        }
+        if (!projected) return null;
 
         return [
             mapCenterX +
@@ -274,39 +177,28 @@
                     1013904223
                 ) >>> 0;
 
-            return (
-                value / 4294967296
-            );
+            return value / 4294967296;
         };
     }
 
     function drawStars() {
-        const random =
-            seededRandom(20260913);
+        const random = seededRandom(20260913);
 
         ctx.save();
 
-        const starCount =
-            Math.max(
-                90,
-                Math.round(
-                    width / 9
-                )
-            );
+        const starCount = Math.max(
+            90,
+            Math.round(width / 9)
+        );
 
         for (
             let index = 0;
             index < starCount;
             index += 1
         ) {
-            const x =
-                random() * width;
-
-            const y =
-                random() * height;
-
-            const radius =
-                random() * 0.85 + 0.2;
+            const x = random() * width;
+            const y = random() * height;
+            const radius = random() * 0.85 + 0.2;
 
             ctx.beginPath();
 
@@ -331,48 +223,29 @@
     }
 
     function drawMap() {
-        if (!land) {
-            return;
-        }
+        if (!land) return;
 
         ctx.save();
 
-        ctx.translate(
-            mapCenterX,
-            0
-        );
-
-        ctx.scale(
-            mapStretchX,
-            1
-        );
-
-        ctx.translate(
-            -mapCenterX,
-            0
-        );
+        ctx.translate(mapCenterX, 0);
+        ctx.scale(mapStretchX, 1);
+        ctx.translate(-mapCenterX, 0);
 
         ctx.beginPath();
+        path({ type: "Sphere" });
 
-        path({
-            type: "Sphere"
-        });
-
-        ctx.fillStyle =
-            "rgba(1, 7, 16, 0.96)";
-
+        ctx.fillStyle = "rgba(1, 7, 16, 0.96)";
         ctx.fill();
 
         ctx.beginPath();
         path(land);
 
-        const landGradient =
-            ctx.createLinearGradient(
-                0,
-                0,
-                0,
-                height
-            );
+        const landGradient = ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            height
+        );
 
         landGradient.addColorStop(
             0,
@@ -384,9 +257,7 @@
             "rgba(15, 59, 83, 0.98)"
         );
 
-        ctx.fillStyle =
-            landGradient;
-
+        ctx.fillStyle = landGradient;
         ctx.fill();
 
         ctx.strokeStyle =
@@ -403,36 +274,29 @@
      * 访问次数越多，红点越大。
      */
     function dotRadius(views) {
-        const count =
-            Math.max(
-                1,
-                Number(views) || 1
-            );
+        const count = Math.max(
+            1,
+            Number(views) || 1
+        );
 
         return (
             2.3 +
             Math.min(
                 7.7,
-                Math.log2(
-                    count + 1
-                ) * 1.15
+                Math.log2(count + 1) * 1.15
             )
         );
     }
 
     function drawVisitDots(point) {
-        const center =
-            projectPoint(
-                point.longitude,
-                point.latitude
-            );
+        const center = projectPoint(
+            point.longitude,
+            point.latitude
+        );
 
-        if (!center) {
-            return;
-        }
+        if (!center) return;
 
-        const radius =
-            dotRadius(point.views);
+        const radius = dotRadius(point.views);
 
         ctx.save();
 
@@ -461,51 +325,38 @@
     }
 
     /*
-     * 保存最近一次成功绘制的完整地图。
+     * 保存最近一次成功绘制的完整地图画面。
      */
     function saveSuccessfulSnapshot() {
-        if (!land) {
-            return;
-        }
+        if (!land) return;
 
         if (snapshotTimer) {
-            window.clearTimeout(
-                snapshotTimer
-            );
+            window.clearTimeout(snapshotTimer);
         }
 
-        snapshotTimer =
-            window.setTimeout(
-                () => {
-                    try {
-                        const snapshot =
-                            canvas.toDataURL(
-                                "image/webp",
-                                0.82
-                            );
+        snapshotTimer = window.setTimeout(() => {
+            try {
+                const snapshot = canvas.toDataURL(
+                    "image/webp",
+                    0.82
+                );
 
-                        localStorage.setItem(
-                            SNAPSHOT_CACHE_KEY,
-                            snapshot
-                        );
+                localStorage.setItem(
+                    SNAPSHOT_CACHE_KEY,
+                    snapshot
+                );
 
-                        host.style.backgroundImage =
-                            `url("${snapshot}")`;
+                host.style.backgroundImage =
+                    `url("${snapshot}")`;
 
-                        host.style.backgroundSize =
-                            "cover";
+                host.style.backgroundSize = "cover";
+                host.style.backgroundPosition = "center";
 
-                        host.style.backgroundPosition =
-                            "center";
-
-                        hasCachedSnapshot =
-                            true;
-                    } catch (_) {
-                        // 快照失败时继续显示实时地图。
-                    }
-                },
-                250
-            );
+                hasCachedSnapshot = true;
+            } catch (_) {
+                // 快照保存失败时继续显示实时地图。
+            }
+        }, 250);
     }
 
     function render() {
@@ -520,37 +371,22 @@
 
         /*
          * 实时地图尚未准备好时，
-         * 保留上一次成功地图的背景快照。
+         * 不覆盖上一次成功的地图背景。
          */
-        if (
-            !land &&
-            hasCachedSnapshot
-        ) {
+        if (!land && hasCachedSnapshot) {
             return;
         }
 
-        const ocean =
-            ctx.createLinearGradient(
-                0,
-                0,
-                0,
-                height
-            );
-
-        ocean.addColorStop(
+        const ocean = ctx.createLinearGradient(
             0,
-            "#01040a"
+            0,
+            0,
+            height
         );
 
-        ocean.addColorStop(
-            0.58,
-            "#020b16"
-        );
-
-        ocean.addColorStop(
-            1,
-            "#04101d"
-        );
+        ocean.addColorStop(0, "#01040a");
+        ocean.addColorStop(0.58, "#020b16");
+        ocean.addColorStop(1, "#04101d");
 
         ctx.fillStyle = ocean;
 
@@ -563,120 +399,85 @@
 
         drawStars();
         drawMap();
-
-        points.forEach(
-            drawVisitDots
-        );
+        points.forEach(drawVisitDots);
 
         saveSuccessfulSnapshot();
     }
 
     function updateSummary() {
-        if (
-            !summary ||
-            !totalViews
-        ) {
-            return;
-        }
+        if (!summary || !totalViews) return;
 
-        const countryTotals =
-            new Map();
+        const countryTotals = new Map();
 
-        points.forEach(
-            (point) => {
-                const code =
-                    String(
-                        point.country ||
-                        ""
-                    )
-                        .toUpperCase() ||
-                    "UNKNOWN";
+        points.forEach((point) => {
+            const code = String(
+                point.country || ""
+            ).toUpperCase() || "UNKNOWN";
 
-                const visits =
-                    Number(
-                        point.views
-                    ) || 0;
+            const visits =
+                Number(point.views) || 0;
 
-                countryTotals.set(
-                    code,
-                    (
-                        countryTotals.get(
-                            code
-                        ) || 0
-                    ) + visits
-                );
-            }
+            countryTotals.set(
+                code,
+                (
+                    countryTotals.get(code) ||
+                    0
+                ) + visits
+            );
+        });
+
+        const rankedCountries = [
+            ...countryTotals.entries()
+        ].sort(
+            (first, second) =>
+                second[1] - first[1]
         );
 
-        const rankedCountries =
-            [
-                ...countryTotals.entries()
-            ].sort(
-                (
-                    first,
-                    second
-                ) =>
-                    second[1] -
-                    first[1]
-            );
-
+        /*
+         * 最多显示访问量最高的7个国家或地区。
+         */
         const visibleCountries =
             rankedCountries
                 .slice(0, 7)
-                .map(
-                    ([
-                        code,
-                        visits
-                    ]) => {
-                        const name =
-                            code ===
-                            "UNKNOWN"
-                                ? (
-                                      isEnglish
-                                          ? "Unknown"
-                                          : "未知地区"
-                                  )
-                                : (
-                                      regionNames?.of(
-                                          code
-                                      ) ||
-                                      code
-                                  );
+                .map(([code, visits]) => {
+                    const name =
+                        code === "UNKNOWN"
+                            ? (
+                                  isEnglish
+                                      ? "Unknown"
+                                      : "未知地区"
+                              )
+                            : (
+                                  regionNames?.of(code) ||
+                                  code
+                              );
 
-                        if (isEnglish) {
-                            return (
-                                `${name} ` +
-                                `${visits.toLocaleString(
-                                    locale
-                                )}`
-                            );
-                        }
-
+                    if (isEnglish) {
                         return (
                             `${name} ` +
-                            `${visits.toLocaleString(
-                                locale
-                            )}次`
+                            `${visits.toLocaleString(locale)}`
                         );
                     }
-                );
 
+                    return (
+                        `${name} ` +
+                        `${visits.toLocaleString(locale)}次`
+                    );
+                });
+
+        /*
+         * 第8名以后的访问量合并为“其他”。
+         */
         const remainingVisits =
             rankedCountries
                 .slice(7)
                 .reduce(
-                    (
-                        sum,
-                        [, visits]
-                    ) =>
-                        sum +
-                        visits,
+                    (sum, [, visits]) =>
+                        sum + visits,
                     0
                 );
 
-        if (
-            remainingVisits > 0
-        ) {
+        if (remainingVisits > 0) {
             if (isEnglish) {
                 visibleCountries.push(
                     `Other ${remainingVisits.toLocaleString(
@@ -695,34 +496,27 @@
         if (isEnglish) {
             summary.textContent =
                 `Global visitor footprint · ` +
-                visibleCountries.join(
-                    " · "
-                );
+                visibleCountries.join(" · ");
         } else {
             summary.textContent =
                 `全球访问足迹 · ` +
-                visibleCountries.join(
-                    " · "
-                );
+                visibleCountries.join(" · ");
         }
 
         summary.hidden = false;
     }
 
     /*
-     * 恢复上次成功获得的访问统计。
+     * 恢复最近一次成功取得的访问统计。
      */
     function restoreCachedVisits() {
-        const cached =
-            readCache(
-                VISIT_CACHE_KEY
-            );
+        const cached = readCache(
+            VISIT_CACHE_KEY
+        );
 
         if (
             !cached ||
-            !Array.isArray(
-                cached.points
-            )
+            !Array.isArray(cached.points)
         ) {
             return false;
         }
@@ -730,9 +524,7 @@
         points = cached.points;
 
         totalViews =
-            Number(
-                cached.totalViews
-            ) || 0;
+            Number(cached.totalViews) || 0;
 
         updateSummary();
         requestRender();
@@ -740,15 +532,10 @@
         return true;
     }
 
-    function setTooltip(
-        point,
-        x,
-        y
-    ) {
-        let tooltip =
-            host.querySelector(
-                ".map-tooltip"
-            );
+    function setTooltip(point, x, y) {
+        let tooltip = host.querySelector(
+            ".map-tooltip"
+        );
 
         if (!point) {
             if (tooltip) {
@@ -760,57 +547,44 @@
 
         if (!tooltip) {
             tooltip =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
             tooltip.className =
                 "map-tooltip";
 
-            host.appendChild(
-                tooltip
-            );
+            host.appendChild(tooltip);
         }
 
-        const countryCode =
-            String(
-                point.country || ""
-            ).toUpperCase();
+        const countryCode = String(
+            point.country || ""
+        ).toUpperCase();
 
-        const countryName =
-            countryCode
-                ? (
-                      regionNames?.of(
-                          countryCode
-                      ) ||
-                      countryCode
-                  )
-                : "";
+        const countryName = countryCode
+            ? (
+                  regionNames?.of(countryCode) ||
+                  countryCode
+              )
+            : "";
 
-        const place =
-            [
-                point.city,
-                countryName
-            ]
-                .filter(Boolean)
-                .join(" · ") ||
+        const place = [
+            point.city,
+            countryName
+        ]
+            .filter(Boolean)
+            .join(" · ") ||
             (
-                is                isEnglish
+                isEnglish
                     ? "Unknown location"
                     : "未知地区"
             );
 
         const visits =
-            Number(
-                point.views
-            ) || 0;
+            Number(point.views) || 0;
 
         if (isEnglish) {
             tooltip.textContent =
                 `${place}: ` +
-                `${visits.toLocaleString(
-                    locale
-                )} ` +
+                `${visits.toLocaleString(locale)} ` +
                 `visit${
                     visits === 1
                         ? ""
@@ -819,61 +593,41 @@
         } else {
             tooltip.textContent =
                 `${place}：` +
-                `${visits.toLocaleString(
-                    locale
-                )} 次访问`;
+                `${visits.toLocaleString(locale)} 次访问`;
         }
 
-        tooltip.style.left =
-            `${x}px`;
-
-        tooltip.style.top =
-            `${y}px`;
+        tooltip.style.left = `${x}px`;
+        tooltip.style.top = `${y}px`;
     }
 
     function findNearest(x, y) {
         let nearest = null;
-        let bestDistance =
-            Infinity;
+        let bestDistance = Infinity;
 
-        points.forEach(
-            (point) => {
-                const projected =
-                    projectPoint(
-                        point.longitude,
-                        point.latitude
-                    );
+        points.forEach((point) => {
+            const projected = projectPoint(
+                point.longitude,
+                point.latitude
+            );
 
-                if (!projected) {
-                    return;
-                }
+            if (!projected) return;
 
-                const distance =
-                    Math.hypot(
-                        projected[0] -
-                            x,
-                        projected[1] -
-                            y
-                    );
+            const distance = Math.hypot(
+                projected[0] - x,
+                projected[1] - y
+            );
 
-                const clickableRadius =
-                    dotRadius(
-                        point.views
-                    ) + 8;
+            const clickableRadius =
+                dotRadius(point.views) + 8;
 
-                if (
-                    distance <
-                        bestDistance &&
-                    distance <=
-                        clickableRadius
-                ) {
-                    bestDistance =
-                        distance;
-
-                    nearest = point;
-                }
+            if (
+                distance < bestDistance &&
+                distance <= clickableRadius
+            ) {
+                bestDistance = distance;
+                nearest = point;
             }
-        );
+        });
 
         return nearest;
     }
@@ -884,7 +638,7 @@
             const rect =
                 host.getBoundingClientRect();
 
-            pointer = {
+            const pointer = {
                 x:
                     event.clientX -
                     rect.left,
@@ -893,11 +647,10 @@
                     rect.top
             };
 
-            const point =
-                findNearest(
-                    pointer.x,
-                    pointer.y
-                );
+            const point = findNearest(
+                pointer.x,
+                pointer.y
+            );
 
             setTooltip(
                 point,
@@ -910,13 +663,12 @@
     host.addEventListener(
         "pointerleave",
         () => {
-            pointer = null;
             setTooltip(null);
         }
     );
 
     /*
-     * 点击中英文切换时做一次标记。
+     * 点击中英文切换按钮时进行一次标记。
      * 新页面读取标记后只获取统计，
      * 不增加访问次数。
      */
@@ -924,39 +676,33 @@
         .querySelectorAll(
             ".language-switch a"
         )
-        .forEach(
-            (link) => {
-                link.addEventListener(
-                    "click",
-                    () => {
-                        try {
-                            sessionStorage.setItem(
-                                "visitor-map-skip-next-record",
-                                "1"
-                            );
-                        } catch (_) {
-                            // 不影响语言切换。
-                        }
+        .forEach((link) => {
+            link.addEventListener(
+                "click",
+                () => {
+                    try {
+                        sessionStorage.setItem(
+                            "visitor-map-skip-next-record",
+                            "1"
+                        );
+                    } catch (_) {
+                        // 不影响语言切换。
                     }
-                );
-            }
-        );
+                }
+            );
+        });
 
     async function loadVisits() {
-        if (!VISITOR_API_URL) {
-            return;
-        }
+        if (!VISITOR_API_URL) return;
 
         /*
-         * 先显示上一次成功的统计，
-         * 然后再请求最新数据。
+         * 先显示缓存统计，再请求最新统计。
          */
         const restoredFromCache =
             restoreCachedVisits();
 
         try {
-            let skipThisRecord =
-                false;
+            let skipThisRecord = false;
 
             try {
                 skipThisRecord =
@@ -971,41 +717,35 @@
                 // sessionStorage不可用时正常请求。
             }
 
-            const endpoint =
-                skipThisRecord
-                    ? "/api/visits"
-                    : "/api/visit";
+            const endpoint = skipThisRecord
+                ? "/api/visits"
+                : "/api/visit";
 
-            const response =
-                await fetch(
-                    `${VISITOR_API_URL.replace(
-                        /\/$/,
-                        ""
-                    )}${endpoint}`,
-                    {
-                        method:
-                            skipThisRecord
-                                ? "GET"
-                                : "POST",
+            const response = await fetch(
+                `${VISITOR_API_URL.replace(
+                    /\/$/,
+                    ""
+                )}${endpoint}`,
+                {
+                    method: skipThisRecord
+                        ? "GET"
+                        : "POST",
 
-                        headers:
-                            skipThisRecord
-                                ? undefined
-                                : {
-                                      "Content-Type":
-                                          "application/json"
-                                  },
+                    headers: skipThisRecord
+                        ? undefined
+                        : {
+                              "Content-Type":
+                                  "application/json"
+                          },
 
-                        body:
-                            skipThisRecord
-                                ? undefined
-                                : "{}",
+                    body: skipThisRecord
+                        ? undefined
+                        : "{}",
 
-                        mode: "cors",
-                        credentials:
-                            "omit"
-                    }
-                );
+                    mode: "cors",
+                    credentials: "omit"
+                }
+            );
 
             if (!response.ok) {
                 throw new Error(
@@ -1016,29 +756,25 @@
             const data =
                 await response.json();
 
-            points =
-                Array.isArray(
-                    data.points
-                )
-                    ? data.points
-                    : [];
+            points = Array.isArray(
+                data.points
+            )
+                ? data.points
+                : [];
 
             totalViews =
-                Number(
-                    data.totalViews
-                ) || 0;
+                Number(data.totalViews) || 0;
 
             /*
-             * 中英文页面位于同一个网站，
-             * 因此共享同一份本地缓存。
+             * 中文页和英文页位于同一网站，
+             * 因此共享同一份统计缓存。
              */
             writeCache(
                 VISIT_CACHE_KEY,
                 {
                     points,
                     totalViews,
-                    savedAt:
-                        Date.now()
+                    savedAt: Date.now()
                 }
             );
 
@@ -1057,19 +793,15 @@
     }
 
     /*
-     * 优先加载最新世界地图数据；
-     * 失败时使用上次成功的数据。
+     * 优先加载最新世界地图。
+     * 如果失败则使用上次成功的数据。
      */
     async function loadWorldData() {
         try {
-            const response =
-                await fetch(
-                    WORLD_DATA_URL,
-                    {
-                        cache:
-                            "no-cache"
-                    }
-                );
+            const response = await fetch(
+                WORLD_DATA_URL,
+                { cache: "no-cache" }
+            );
 
             if (!response.ok) {
                 throw new Error(
@@ -1087,10 +819,9 @@
 
             return world;
         } catch (error) {
-            const cachedWorld =
-                readCache(
-                    WORLD_CACHE_KEY
-                );
+            const cachedWorld = readCache(
+                WORLD_CACHE_KEY
+            );
 
             if (
                 cachedWorld
@@ -1110,11 +841,9 @@
     }
 
     const observer =
-        new ResizeObserver(
-            () => {
-                resize();
-            }
-        );
+        new ResizeObserver(() => {
+            resize();
+        });
 
     observer.observe(host);
     resize();
@@ -1124,12 +853,10 @@
         loadVisits()
     ])
         .then(([world]) => {
-            land =
-                topojson.feature(
-                    world,
-                    world.objects
-                        .countries
-                );
+            land = topojson.feature(
+                world,
+                world.objects.countries
+            );
 
             requestRender();
         })

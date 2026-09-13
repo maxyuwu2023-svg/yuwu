@@ -488,7 +488,7 @@
         // 只显示访问量最高的7个国家
         const visibleCountries =
             rankedCountries
-                .slice(0, 7)
+                .slice(0, 4)
                 .map(
                     ([
                         code,
@@ -530,7 +530,7 @@
         // 其他国家合并显示
         const remainingVisits =
             rankedCountries
-                .slice(7)
+                .slice(4)
                 .reduce(
                     (
                         sum,

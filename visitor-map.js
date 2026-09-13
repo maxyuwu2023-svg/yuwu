@@ -7,10 +7,17 @@
     const WORLD_DATA_URL =
         "assets/vendor/countries-110m.json";
 
-    // 桌面端地图横向宽度比例
     const DESKTOP_MAP_WIDTH_RATIO = 0.84;
 
-    // 根据网页语言决定访问统计的显示语言
+    //    const VISIT_CACHE_KEY =
+        "visitor-map-last-visits-v1";
+
+    const WORLD_CACHE_KEY =
+        "visitor-map-last-world-v1";
+
+    const SNAPSHOT_CACHE_KEY =
+        "visitor-map-last-snapshot-v1";
+
     const isEnglish =
         document.documentElement.lang
             .toLowerCase()
@@ -41,9 +48,40 @@
             "visit-summary"
         );
 
+    if (!host || !canvas) {
+        return;
+    }
+
+    /*
+     * 首先尝试读取最近一次成功绘制的地图快照。
+     * 即使绘图库或地图数据暂时加载失败，
+     * 也能显示上一次成功时的地图。
+     */
+    let hasCachedSnapshot = false;
+
+    try {
+        const snapshot =
+            localStorage.getItem(
+                SNAPSHOT_CACHE_KEY
+            );
+
+        if (snapshot) {
+            host.style.backgroundImage =
+                `url("${snapshot}")`;
+
+            host.style.backgroundSize =
+                "cover";
+
+            host.style.backgroundPosition =
+                "center";
+
+            hasCachedSnapshot = true;
+        }
+    } catch (_) {
+        // 快照不可用时不影响页面其他内容。
+    }
+
     if (
-        !host ||
-        !canvas ||
         !window.d3 ||
         !window.topojson
     ) {
@@ -54,10 +92,14 @@
         canvas.getContext("2d");
 
     const projection =
+       =
         d3.geoNaturalEarth1();
 
     const path =
-        d3.geoPath(projection, ctx);
+        d3.geoPath(
+            projection,
+            ctx
+        );
 
     let land = null;
     let points = [];
@@ -69,8 +111,37 @@
 
     let mapStretchX = 1;
     let mapCenterX = 0;
+
     let animationFrame = null;
     let pointer = null;
+    let snapshotTimer = null;
+
+    function readCache(key) {
+        try {
+            const value =
+                localStorage.getItem(key);
+
+            return value
+                ? JSON.parse(value)
+                : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function writeCache(
+        key,
+        value
+    ) {
+        try {
+            localStorage.setItem(
+                key,
+                JSON.stringify(value)
+            );
+        } catch (_) {
+            // 缓存失败不影响实时地图。
+        }
+    }
 
     function requestRender() {
         if (!animationFrame) {
@@ -83,13 +154,20 @@
 
     function resize() {
         const rect =
+35:22 =
             host.getBoundingClientRect();
 
         width =
-            Math.max(1, rect.width);
+            Math.max(
+                1,
+                rect.width
+            );
 
         height =
-            Math.max(1, rect.height);
+            Math.max(
+                1,
+                rect.height
+            );
 
         dpr =
             Math.min(
@@ -98,10 +176,14 @@
             );
 
         canvas.width =
-            Math.round(width * dpr);
+            Math.round(
+                width * dpr
+            );
 
         canvas.height =
-            Math.round(height * dpr);
+            Math.round(
+                height * dpr
+            );
 
         ctx.setTransform(
             dpr,
@@ -207,7 +289,9 @@
         const starCount =
             Math.max(
                 90,
-                Math.round(width / 9)
+                Math.round(
+                    width / 9
+                )
             );
 
         for (
@@ -268,7 +352,6 @@
             0
         );
 
-        // 绘制海洋区域
         ctx.beginPath();
 
         path({
@@ -280,7 +363,6 @@
 
         ctx.fill();
 
-        // 绘制陆地
         ctx.beginPath();
         path(land);
 
@@ -307,7 +389,6 @@
 
         ctx.fill();
 
-        // 绘制国家边界
         ctx.strokeStyle =
             "rgba(147, 222, 244, 0.58)";
 
@@ -318,13 +399,8 @@
     }
 
     /*
-     * 根据访问次数计算红点大小。
-     *
-     * 一个地区只显示一个红点。
+     * 每个地区显示一个红点。
      * 访问次数越多，红点越大。
-     *
-     * 使用对数增长，防止访问次数
-     * 很高时红点变得过大。
      */
     function dotRadius(views) {
         const count =
@@ -360,7 +436,6 @@
 
         ctx.save();
 
-        // 纯红点，没有光晕
         ctx.fillStyle =
             "rgba(255, 47, 57, 0.96)";
 
@@ -376,7 +451,6 @@
 
         ctx.fill();
 
-        // 细边框用于增强辨识度
         ctx.strokeStyle =
             "rgba(255, 225, 225, 0.82)";
 
@@ -384,6 +458,54 @@
         ctx.stroke();
 
         ctx.restore();
+    }
+
+    /*
+     * 保存最近一次成功绘制的完整地图。
+     */
+    function saveSuccessfulSnapshot() {
+        if (!land) {
+            return;
+        }
+
+        if (snapshotTimer) {
+            window.clearTimeout(
+                snapshotTimer
+            );
+        }
+
+        snapshotTimer =
+            window.setTimeout(
+                () => {
+                    try {
+                        const snapshot =
+                            canvas.toDataURL(
+                                "image/webp",
+                                0.82
+                            );
+
+                        localStorage.setItem(
+                            SNAPSHOT_CACHE_KEY,
+                            snapshot
+                        );
+
+                        host.style.backgroundImage =
+                            `url("${snapshot}")`;
+
+                        host.style.backgroundSize =
+                            "cover";
+
+                        host.style.backgroundPosition =
+                            "center";
+
+                        hasCachedSnapshot =
+                            true;
+                    } catch (_) {
+                        // 快照失败时继续显示实时地图。
+                    }
+                },
+                250
+            );
     }
 
     function render() {
@@ -395,6 +517,17 @@
             width,
             height
         );
+
+        /*
+         * 实时地图尚未准备好时，
+         * 保留上一次成功地图的背景快照。
+         */
+        if (
+            !land &&
+            hasCachedSnapshot
+        ) {
+            return;
+        }
 
         const ocean =
             ctx.createLinearGradient(
@@ -434,6 +567,8 @@
         points.forEach(
             drawVisitDots
         );
+
+        saveSuccessfulSnapshot();
     }
 
     function updateSummary() {
@@ -485,10 +620,9 @@
                     first[1]
             );
 
-        // 只显示访问量最高的7个国家
         const visibleCountries =
             rankedCountries
-                .slice(0, 4)
+                .slice(0, 7)
                 .map(
                     ([
                         code,
@@ -527,10 +661,9 @@
                     }
                 );
 
-        // 其他国家合并显示
         const remainingVisits =
             rankedCountries
-                .slice(4)
+                .slice(7)
                 .reduce(
                     (
                         sum,
@@ -574,6 +707,37 @@
         }
 
         summary.hidden = false;
+    }
+
+    /*
+     * 恢复上次成功获得的访问统计。
+     */
+    function restoreCachedVisits() {
+        const cached =
+            readCache(
+                VISIT_CACHE_KEY
+            );
+
+        if (
+            !cached ||
+            !Array.isArray(
+                cached.points
+            )
+        ) {
+            return false;
+        }
+
+        points = cached.points;
+
+        totalViews =
+            Number(
+                cached.totalViews
+            ) || 0;
+
+        updateSummary();
+        requestRender();
+
+        return true;
     }
 
     function setTooltip(
@@ -631,7 +795,7 @@
                 .filter(Boolean)
                 .join(" · ") ||
             (
-                isEnglish
+                is                isEnglish
                     ? "Unknown location"
                     : "未知地区"
             );
@@ -751,31 +915,64 @@
         }
     );
 
+    /*
+     * 点击中英文切换时做一次标记。
+     * 新页面读取标记后只获取统计，
+     * 不增加访问次数。
+     */
+    document
+        .querySelectorAll(
+            ".language-switch a"
+        )
+        .forEach(
+            (link) => {
+                link.addEventListener(
+                    "click",
+                    () => {
+                        try {
+                            sessionStorage.setItem(
+                                "visitor-map-skip-next-record",
+                                "1"
+                            );
+                        } catch (_) {
+                            // 不影响语言切换。
+                        }
+                    }
+                );
+            }
+        );
+
     async function loadVisits() {
         if (!VISITOR_API_URL) {
             return;
         }
 
+        /*
+         * 先显示上一次成功的统计，
+         * 然后再请求最新数据。
+         */
+        const restoredFromCache =
+            restoreCachedVisits();
+
         try {
-            /*
-             * 中文和英文页面共享 sessionStorage。
-             * 在同一次浏览会话中切换语言，
-             * 不会重复增加访问次数。
-             */
-            let alreadyRecorded =
+            let skipThisRecord =
                 false;
 
             try {
-                alreadyRecorded =
+                skipThisRecord =
                     sessionStorage.getItem(
-                        "visitor-map-recorded"
+                        "visitor-map-skip-next-record"
                     ) === "1";
+
+                sessionStorage.removeItem(
+                    "visitor-map-skip-next-record"
+                );
             } catch (_) {
-                // 隐私模式下仍可正常加载。
+                // sessionStorage不可用时正常请求。
             }
 
             const endpoint =
-                alreadyRecorded
+                skipThisRecord
                     ? "/api/visits"
                     : "/api/visit";
 
@@ -787,12 +984,12 @@
                     )}${endpoint}`,
                     {
                         method:
-                            alreadyRecorded
+                            skipThisRecord
                                 ? "GET"
                                 : "POST",
 
                         headers:
-                            alreadyRecorded
+                            skipThisRecord
                                 ? undefined
                                 : {
                                       "Content-Type":
@@ -800,7 +997,7 @@
                                   },
 
                         body:
-                            alreadyRecorded
+                            skipThisRecord
                                 ? undefined
                                 : "{}",
 
@@ -819,17 +1016,6 @@
             const data =
                 await response.json();
 
-            if (!alreadyRecorded) {
-                try {
-                    sessionStorage.setItem(
-                        "visitor-map-recorded",
-                        "1"
-                    );
-                } catch (_) {
-                    // 不影响地图显示。
-                }
-            }
-
             points =
                 Array.isArray(
                     data.points
@@ -842,6 +1028,20 @@
                     data.totalViews
                 ) || 0;
 
+            /*
+             * 中英文页面位于同一个网站，
+             * 因此共享同一份本地缓存。
+             */
+            writeCache(
+                VISIT_CACHE_KEY,
+                {
+                    points,
+                    totalViews,
+                    savedAt:
+                        Date.now()
+                }
+            );
+
             updateSummary();
             requestRender();
         } catch (error) {
@@ -849,6 +1049,63 @@
                 "访问地图数据暂时不可用：",
                 error
             );
+
+            if (restoredFromCache) {
+                requestRender();
+            }
+        }
+    }
+
+    /*
+     * 优先加载最新世界地图数据；
+     * 失败时使用上次成功的数据。
+     */
+    async function loadWorldData() {
+        try {
+            const response =
+                await fetch(
+                    WORLD_DATA_URL,
+                    {
+                        cache:
+                            "no-cache"
+                    }
+                );
+
+            if (!response.ok) {
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+            const world =
+                await response.json();
+
+            writeCache(
+                WORLD_CACHE_KEY,
+                world
+            );
+
+            return world;
+        } catch (error) {
+            const cachedWorld =
+                readCache(
+                    WORLD_CACHE_KEY
+                );
+
+            if (
+                cachedWorld
+                    ?.objects
+                    ?.countries
+            ) {
+                console.warn(
+                    "世界地图数据加载失败，正在显示上次成功的地图：",
+                    error
+                );
+
+                return cachedWorld;
+            }
+
+            throw error;
         }
     }
 
@@ -863,19 +1120,7 @@
     resize();
 
     Promise.all([
-        fetch(
-            WORLD_DATA_URL
-        ).then(
-            (response) => {
-                if (!response.ok) {
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
-                }
-
-                return response.json();
-            }
-        ),
+        loadWorldData(),
         loadVisits()
     ])
         .then(([world]) => {
@@ -908,8 +1153,7 @@
                     animationFrame
                 );
 
-                animationFrame =
-                    null;
+                animationFrame = null;
             } else if (
                 !document.hidden &&
                 !animationFrame

@@ -4,15 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>武昱 - 个人主页</title>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, "Helvetica Neue", Arial, sans-serif;
             line-height: 1.7;
             color: #333;
             background: #f7f9fc;
         }
-        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
         .world-hero {
             min-height: 320px;
@@ -24,9 +36,19 @@
             color: #fff;
             text-align: center;
             background:
-                radial-gradient(circle at 50% 35%, rgba(17, 76, 120, 0.28), transparent 52%),
-                linear-gradient(180deg, #020711 0%, #061426 58%, #071a2c 100%);
+                radial-gradient(
+                    circle at 50% 35%,
+                    rgba(17, 76, 120, 0.28),
+                    transparent 52%
+                ),
+                linear-gradient(
+                    180deg,
+                    #020711 0%,
+                    #061426 58%,
+                    #071a2c 100%
+                );
         }
+
         .world-hero::after {
             content: "";
             position: absolute;
@@ -34,37 +56,94 @@
             z-index: -1;
             pointer-events: none;
             background:
-                linear-gradient(180deg, rgba(0, 4, 12, 0.16), rgba(0, 5, 16, 0.34)),
-                radial-gradient(ellipse at center, transparent 28%, rgba(0, 3, 10, 0.45) 100%);
+                linear-gradient(
+                    180deg,
+                    rgba(0, 4, 12, 0.16),
+                    rgba(0, 5, 16, 0.34)
+                ),
+                radial-gradient(
+                    ellipse at center,
+                    transparent 28%,
+                    rgba(0, 3, 10, 0.45) 100%
+                );
         }
+
         #visitor-map {
             position: absolute;
             inset: 0;
             z-index: -2;
         }
+
         #visitor-map canvas {
             width: 100%;
             height: 100%;
             display: block;
         }
+
+        .language-switch {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            border: 1px solid rgba(185, 220, 245, 0.32);
+            border-radius: 999px;
+            background: rgba(2, 10, 22, 0.62);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 0.82rem;
+            line-height: 1.4;
+        }
+
+        .language-switch a {
+            color: rgba(224, 244, 255, 0.72);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .language-switch a:hover,
+        .language-switch a.active {
+            color: #fff;
+        }
+
+        .language-switch a.active {
+            font-weight: 700;
+        }
+
         .hero-content {
             padding: 58px 20px 44px;
             text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+            transform: translateY(55px);
         }
+
         .world-hero h1 {
             font-size: clamp(2rem, 3.4vw, 3rem);
             letter-spacing: 0.025em;
             margin-bottom: 8px;
+            transform: translateY(16px);
         }
-        .world-hero p { opacity: 0.96; font-size: 1.08em; }
-        .visit-summary {
+
+        .world-hero .visit-summary {
             min-height: 24px;
-            margin-top: 28px;
+            margin-top: 46px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, "Helvetica Neue", Arial, sans-serif;
             font-size: 0.78rem;
+            font-weight: 400;
+            line-height: 1.6;
             letter-spacing: 0.08em;
             color: rgba(224, 244, 255, 0.84);
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+            transform: none;
         }
-        .visit-summary[hidden] { display: none; }
+
+        .world-hero .visit-summary[hidden] {
+            display: none;
+        }
+
         .map-tooltip {
             position: absolute;
             z-index: 3;
@@ -86,49 +165,70 @@
             margin: 24px 0;
             padding: 28px;
             border-radius: 10px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
         }
+
         section h2 {
             font-size: 1.4em;
             color: #1e3c72;
             border-left: 4px solid #2a5298;
             padding-left: 12px;
-            margin-bottom: 18px; 
+            margin-bottom: 18px;
         }
-        h3 {
-            font-size: 1.1em;
-            color: #2a5298;
-            margin: 18px 0 8px;
+
+        ul {
+            list-style: none;
         }
-        ul { list-style: none; }
-        li { padding: 6px 0; }
+
+        li {
+            padding: 6px 0;
+        }
+
         .paper-list li {
             padding: 14px 0;
             border-bottom: 1px solid #eee;
         }
-        .paper-list li:last-child { border-bottom: none; }
-        .paper-list .title { font-weight: 600; }
-        .paper-list .meta { color: #555; font-size: 0.95em; }
-        .paper-list a { color: #2a5298; text-decoration: none; word-break: break-all; }
-        .paper-list a:hover { text-decoration: underline; }
-        .award-list li, .service-list li, .skill-list li {
+
+        .paper-list li:last-child {
+            border-bottom: none;
+        }
+
+        .paper-list .title {
+            font-weight: 600;
+        }
+
+        .paper-list a {
+            color: #2a5298;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .paper-list a:hover {
+            text-decoration: underline;
+        }
+
+        .award-list li,
+        .service-list li {
             padding: 8px 0;
             border-bottom: 1px dashed #eee;
         }
-        .award-list li:last-child, .service-list li:last-child, .skill-list li:last-child {
+
+        .award-list li:last-child,
+        .service-list li:last-child {
             border-bottom: none;
         }
+
         .timeline-item {
             margin-bottom: 12px;
             padding-left: 16px;
             border-left: 3px solid #2a5298;
         }
+
         .timeline-item .time {
             font-weight: 600;
             color: #1e3c72;
         }
 
-        /* 底部全宽照片，顶部渐入 */
         .bottom-photo {
             width: 100%;
             position: relative;
@@ -136,17 +236,23 @@
             line-height: 0;
             overflow: hidden;
         }
+
         .bottom-photo::before {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height:200px;
-            background: linear-gradient(to bottom, #f7f9fc 0%, rgba(247,249,252,0) 100%);
+            height: 200px;
+            background: linear-gradient(
+                to bottom,
+                #f7f9fc 0%,
+                rgba(247, 249, 252, 0) 100%
+            );
             z-index: 1;
             pointer-events: none;
         }
+
         .bottom-photo img {
             width: 100%;
             height: auto;
@@ -167,181 +273,299 @@
         }
 
         @media (max-width: 600px) {
-            .world-hero { min-height: 235px; }
-            .world-hero h1 { font-size: 1.75em; }
-            .hero-content { padding: 46px 18px 34px; }
-            .visit-summary { margin-top: 20px; font-size: 0.7rem; }
-            section { padding: 20px; }
-            .bottom-photo img { max-height: 320px; }
-            .bottom-photo::before { height: 100px; }
+            .world-hero {
+                min-height: 235px;
+            }
+
+            .language-switch {
+                top: 12px;
+                right: 12px;
+                font-size: 0.74rem;
+            }
+
+            .world-hero h1 {
+                font-size: 1.75em;
+                transform: translateY(10px);
+            }
+
+            .hero-content {
+                padding: 46px 18px 34px;
+                transform: translateY(32px);
+            }
+
+            .world-hero .visit-summary {
+                margin-top: 32px;
+                font-size: 0.68rem;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            .bottom-photo img {
+                max-height: 320px;
+            }
+
+            .bottom-photo::before {
+                height: 100px;
+            }
         }
     </style>
 </head>
+
 <body>
 
 <header class="world-hero">
-    <div id="visitor-map" aria-hidden="true"><canvas></canvas></div>
+    <div id="visitor-map" aria-hidden="true">
+        <canvas></canvas>
+    </div>
+
+    <nav class="language-switch" aria-label="语言选择">
+        <a
+            href="./"
+            class="active"
+            lang="zh-CN"
+            aria-current="page"
+        >中文</a>
+
+        <a href="en.html" lang="en">英语</a>
+    </nav>
+
     <div class="container hero-content">
         <h1>武昱-Yu WU</h1>
-        <p>成都理工大学管理科学学院教授</p>
-        <div id="visit-summary" class="visit-summary" hidden></div>
+        <div
+            id="visit-summary"
+            class="visit-summary"
+            hidden
+        ></div>
     </div>
 </header>
 
 <div class="container">
 
-    <!-- 个人简介 -->
     <section id="about">
         <h2>个人简介</h2>
         <p>
-            武昱，加拿大多伦多大学联合培养管理学博士，成都理工大学管理科学学院教授，中共党员，科研部队复员干部，中国运筹协会终身会员，中国计算机协会（CCF）会员。本硕博分别毕业于西安交通大学、奥尔堡大学和中国科学院大学。曾任解放军某科研部队工程师和美国匹兹堡大学 Research Associate。主要从事运筹优化和机器学习理论及其应用相关的研究工作，曾应邀在英国埃塞克斯大学等国内外学术机构做报告。
-            研究成果发表于 COR、FSM、IJSSOL、IEEE T-ITS、JOCO、JITS、APJOR、JORSC、IET ITS、《中国管理科学》、《计算机科学》、TAMC、ASE 等国内外一流学术期刊和国际学术会议，
-            且 95% 的研究成果同时以第一作者和通讯作者完成。
+            武昱，加拿大多伦多大学联合培养管理学博士，成都理工大学管理科学学院教授，中共党员，科研部队复员干部，中国运筹协会终身会员，中国计算机协会（CCF）会员。本硕博分别毕业于西安交通大学、奥尔堡大学和中国科学院大学。曾任解放军某科研部队工程师和美国匹兹堡大学 Research Associate。主要从事运筹优化和机器学习理论及其应用相关的研究工作，曾应邀在英国埃塞克斯大学等国内外学术机构做报告。研究成果发表于 COR、FSM、IJSSOL、IEEE T-ITS、JOCO、JITS、APJOR、JORSC、IET ITS、《中国管理科学》、《计算机科学》、TAMC、ASE 等国内外一流学术期刊和国际学术会议，且 95% 的研究成果同时以第一作者和通讯作者完成。
         </p>
     </section>
 
-    <!-- 教育经历 -->
     <section id="education">
         <h2>教育经历</h2>
+
         <div class="timeline-item">
             <div class="time">2014.9 — 2019.7</div>
             <div>中国科学院大学 · 管理科学与工程 · 管理学博士</div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2017.9 — 2018.9</div>
-            <div>多伦多大学罗特曼管理学院 · 联合培养博士研究生（导师：Igor Averbakh, Opher Baron, Andre Cire）</div>
+            <div>
+                多伦多大学罗特曼管理学院 · 联合培养博士研究生
+                （导师：Igor Averbakh, Opher Baron, Andre Cire）
+            </div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2014.9 — 2016.6</div>
             <div>丹麦奥尔堡大学 · 经济学与工商管理 · 理学硕士</div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2005.9 — 2009.7</div>
             <div>西安交通大学 · 机械工程及自动化 · 工学学士</div>
         </div>
     </section>
 
-    <!-- 工作经历 -->
     <section id="work">
         <h2>工作经历</h2>
+
         <div class="timeline-item">
             <div class="time">2025.3 — 今</div>
             <div>成都理工大学管理科学学院 · 教授</div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2024.11 — 2025.3</div>
             <div>成都理工大学管理科学学院 · 讲师（珠峰计划引进人才）</div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2019.10 — 2024.10</div>
-            <div>西南交通大学 交通运输与物流学院 物流管理系 · 讲师</div>
+            <div>
+                西南交通大学交通运输与物流学院物流管理系 · 讲师
+            </div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2018.10 — 2019.4</div>
-            <div>美国匹兹堡大学 工业工程系 · Research Associate（导师：Bo Zeng, Egon Balas (CMU)）</div>
+            <div>
+                美国匹兹堡大学工业工程系 · Research Associate
+                （导师：Bo Zeng, Egon Balas (CMU)）
+            </div>
         </div>
+
         <div class="timeline-item">
             <div class="time">2009.7 — 2014.1</div>
-            <div>中国人民解放军某部队 · 优化算法设计和测控数据处理工程师</div>
+            <div>
+                中国人民解放军某部队 · 优化算法设计和测控数据处理工程师
+            </div>
         </div>
     </section>
 
-    <!-- 研究兴趣 -->
     <section id="research">
         <h2>研究兴趣</h2>
         <ul>
-            <li><strong>管理科学方向：</strong>应用概率、整数规划、高维MDP的求解方法、机器学习、在线算法、近似算法等。</li>
-            <li><strong>运营管理方向：</strong>物流、交通、医疗和电子商务等领域中的调度、选址、路径、定价、装箱等问题。</li>
-            <li><strong>目前主要从事：</strong>（1）大规模复杂整数规划问题的求解；（2）不确定环境下序列决策问题的求解，聚焦于“维数灾难”克服的方法及其理论。</li>
+            <li>
+                <strong>管理科学方向：</strong>
+                应用概率、整数规划、高维MDP的求解方法、机器学习、在线算法、近似算法等。
+            </li>
+            <li>
+                <strong>运营管理方向：</strong>
+                物流、交通、医疗和电子商务等领域中的调度、选址、路径、定价、装箱等问题。
+            </li>
+            <li>
+                <strong>目前主要从事：</strong>
+                （1）大规模复杂整数规划问题的求解；（2）不确定环境下序列决策问题的求解，聚焦于“维数灾难”克服的方法及其理论。
+            </li>
         </ul>
     </section>
 
-    <!-- 学术论文 -->
     <section id="papers">
         <h2>学术论文</h2>
+
         <p style="color:#666; margin-bottom:16px; font-size:0.95em;">
             本人加粗，通讯作者标注 *。
         </p>
+
         <ul class="paper-list">
-
             <li>
-                <div class="title"><strong>武昱*</strong>，从百度伐谋看AI编程：统计推断时代的困境与出路，计算机科学，2026，53(11), forthcoming.</div>
+                <div class="title">
+                    <strong>武昱*</strong>，从百度伐谋看AI编程：统计推断时代的困境与出路，计算机科学，2026，53(11), forthcoming.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>, Yuchen Yang. From Statistical Code Generation to Correct-by-Construction AI Programming: A Basis-Function Composition Framework, accepted by the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE2026, ASYDE Workshop), DOI: <a href="https://doi.org/10.1145/3843777.3844528" target="_blank">10.1145/3843777.3844528</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Yuchen Yang. From Statistical Code Generation to Correct-by-Construction AI Programming: A Basis-Function Composition Framework, accepted by the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE2026, ASYDE Workshop). DOI:
+                    <a href="https://doi.org/10.1145/3843777.3844528" target="_blank" rel="noopener noreferrer">10.1145/3843777.3844528</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>, A Customized Perfect Hashing Scheme for MDPs with Structured Set-Based State Representations: Achieving O(1) Query Complexity with Zero Memory Waste, Accepted by Journal of Combinatorial Optimization.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>. A Customized Perfect Hashing Scheme for MDPs with Structured Set-Based State Representations: Achieving O(1) Query Complexity with Zero Memory Waste. Accepted by Journal of Combinatorial Optimization.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu</strong>，Chengjie Li*，Ming Jian, A More Realistic Variant of CVRP: Methodology and A Case Study, Journal of Intelligent Transportation Systems, 1–26. DOI: <a href="https://doi.org/10.1080/15472450.2025.2577742" target="_blank">10.1080/15472450.2025.2577742</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu</strong>, Chengjie Li*, Ming Jian. A More Realistic Variant of CVRP: Methodology and A Case Study. Journal of Intelligent Transportation Systems, 1–26. DOI:
+                    <a href="https://doi.org/10.1080/15472450.2025.2577742" target="_blank" rel="noopener noreferrer">10.1080/15472450.2025.2577742</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>, Xiaoping Qiu, A Lookup Table Design Method: Achieving O(1)-query Complexity and No Memory Waste, Lecture Notes in Computer Science 16084, 63-76. DOI: <a href="https://doi.org/10.1007/978-981-95-4839-2_6" target="_blank">10.1007/978-981-95-4839-2_6</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Xiaoping Qiu. A Lookup Table Design Method: Achieving O(1)-query Complexity and No Memory Waste. Lecture Notes in Computer Science 16084, 63–76. DOI:
+                    <a href="https://doi.org/10.1007/978-981-95-4839-2_6" target="_blank" rel="noopener noreferrer">10.1007/978-981-95-4839-2_6</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，A Dynamic and Stochastic Cumulative Capacitated Vehicle Routing Problem，Asia-Pacific Journal of Operational Research，2024. DOI: <a href="https://doi.org/10.1142/S0217595924500088" target="_blank">10.1142/S0217595924500088</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>. A Dynamic and Stochastic Cumulative Capacitated Vehicle Routing Problem. Asia-Pacific Journal of Operational Research, 2024. DOI:
+                    <a href="https://doi.org/10.1142/S0217595924500088" target="_blank" rel="noopener noreferrer">10.1142/S0217595924500088</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Bo Zeng, Ming Jian, ADP- and Rollout-based Dynamic Vehicle Routing for Pick-up Service via Budgeting Capacity, Flexible Services and Manufacturing Journal, 1-45，2024. DOI: <a href="https://doi.org/10.1007/s10696-024-09551-z" target="_blank">10.1007/s10696-024-09551-z</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Bo Zeng, Ming Jian. ADP- and Rollout-based Dynamic Vehicle Routing for Pick-up Service via Budgeting Capacity. Flexible Services and Manufacturing Journal, 1–45, 2024. DOI:
+                    <a href="https://doi.org/10.1007/s10696-024-09551-z" target="_blank" rel="noopener noreferrer">10.1007/s10696-024-09551-z</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Bo Zeng，Dynamic Parcel Pick-up Routing Problem with Prioritized Customers and Constrained Capacity via Lower-bound-based Rollout Approach, Computers and Operations Research, 154 (2023): 106176. DOI: <a href="https://doi.org/10.1016/j.cor.2023.106176" target="_blank">10.1016/j.cor.2023.106176</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Bo Zeng. Dynamic Parcel Pick-up Routing Problem with Prioritized Customers and Constrained Capacity via Lower-bound-based Rollout Approach. Computers & Operations Research, 154 (2023): 106176. DOI:
+                    <a href="https://doi.org/10.1016/j.cor.2023.106176" target="_blank" rel="noopener noreferrer">10.1016/j.cor.2023.106176</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Ming Jian, State Aggregation and Lower Bound-Based ADP Approach for Dynamic Pick-Up Routing Problem With Capacity Constraint，IEEE Transactions on Intelligent Transportation Systems，2024. DOI: <a href="https://doi.org/10.1109/TITS.2024.3357060" target="_blank">10.1109/TITS.2024.3357060</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Ming Jian. State Aggregation and Lower Bound-Based ADP Approach for Dynamic Pick-Up Routing Problem With Capacity Constraint. IEEE Transactions on Intelligent Transportation Systems, 2024. DOI:
+                    <a href="https://doi.org/10.1109/TITS.2024.3357060" target="_blank" rel="noopener noreferrer">10.1109/TITS.2024.3357060</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Sequential learning based re-optimization approaches for less model-based dynamic pick-up routing problem, International Journal of Systems Science: Operations & Logistics. 11(1), 2024. DOI: <a href="https://doi.org/10.1080/23302674.2023.2291201" target="_blank">10.1080/23302674.2023.2291201</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>. Sequential learning based re-optimization approaches for less model-based dynamic pick-up routing problem. International Journal of Systems Science: Operations & Logistics, 11(1), 2024. DOI:
+                    <a href="https://doi.org/10.1080/23302674.2023.2291201" target="_blank" rel="noopener noreferrer">10.1080/23302674.2023.2291201</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Xiaoping Qiu*，GRASP-based request allocation and MDP-based vehicle routing in home pick-up service with service continuity consideration，IET Intelligent Transport Systems, 18(2), 2024. DOI: <a href="https://doi.org/10.1049/itr2.12454" target="_blank">10.1049/itr2.12454</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Xiaoping Qiu*. GRASP-based request allocation and MDP-based vehicle routing in home pick-up service with service continuity consideration. IET Intelligent Transport Systems, 18(2), 2024. DOI:
+                    <a href="https://doi.org/10.1049/itr2.12454" target="_blank" rel="noopener noreferrer">10.1049/itr2.12454</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>, Bo Zeng, Properties related with conditional expectation for a non-homogeneous Poisson Process, Journal of the Operations Research Society of China, 2024. DOI: <a href="https://doi.org/10.1007/s40305-023-00527-8" target="_blank">10.1007/s40305-023-00527-8</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>, Bo Zeng. Properties related with conditional expectation for a non-homogeneous Poisson Process. Journal of the Operations Research Society of China, 2024. DOI:
+                    <a href="https://doi.org/10.1007/s40305-023-00527-8" target="_blank" rel="noopener noreferrer">10.1007/s40305-023-00527-8</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu*</strong>，Analysis on Decision Making for Secretary Problem with partial Look-ahead Privilege, International Journal of Mathematics in Operational Research, 27(3), 2024, 305-316. DOI: <a href="https://doi.org/10.1504/IJMOR.2024.138054" target="_blank">10.1504/IJMOR.2024.138054</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu*</strong>. Analysis on Decision Making for Secretary Problem with partial Look-ahead Privilege. International Journal of Mathematics in Operational Research, 27(3), 2024, 305–316. DOI:
+                    <a href="https://doi.org/10.1504/IJMOR.2024.138054" target="_blank" rel="noopener noreferrer">10.1504/IJMOR.2024.138054</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>Yu Wu</strong>，Bo Zeng，Siming Huang*，A dynamic strategy for home pick-up service with uncertain customer requests and its implementation. Sustainability, 11(7), 2019. DOI: <a href="https://doi.org/10.3390/su11072060" target="_blank">10.3390/su11072060</a>.</div>
+                <div class="title">
+                    <strong>Yu Wu</strong>, Bo Zeng, Siming Huang*. A dynamic strategy for home pick-up service with uncertain customer requests and its implementation. Sustainability, 11(7), 2019. DOI:
+                    <a href="https://doi.org/10.3390/su11072060" target="_blank" rel="noopener noreferrer">10.3390/su11072060</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title"><strong>武昱*</strong>, 黄思明. 超大规模线性规划的稀疏存储和预处理中比例行的检测和处理方法. 中国管理科学, 2017, 25(10): 100-108. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2017.10.011" target="_blank">10.16381/j.cnki.issn1003-207x.2017.10.011</a>.</div>
+                <div class="title">
+                    <strong>武昱*</strong>, 黄思明. 超大规模线性规划的稀疏存储和预处理中比例行的检测和处理方法. 中国管理科学, 2017, 25(10): 100–108. DOI:
+                    <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2017.10.011" target="_blank" rel="noopener noreferrer">10.16381/j.cnki.issn1003-207x.2017.10.011</a>.
+                </div>
             </li>
 
             <li>
-                <div class="title">胡艳杰, 黄思明, N.Adrien, <strong>武昱</strong>. 对偶性在线性规划预处理中的应用分析. 中国管理科学, 2016, 24(12): 117-126. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2016.12.014" target="_blank">10.16381/j.cnki.issn1003-207x.2016.12.014</a>.</div>
+                <div class="title">
+                    胡艳杰, 黄思明, N. Adrien, <strong>武昱</strong>. 对偶性在线性规划预处理中的应用分析. 中国管理科学, 2016, 24(12): 117–126. DOI:
+                    <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2016.12.014" target="_blank" rel="noopener noreferrer">10.16381/j.cnki.issn1003-207x.2016.12.014</a>.
+                </div>
             </li>
-
         </ul>
     </section>
 
-    <!-- 其他学术成果 -->
     <section id="other">
         <h2>其他学术成果</h2>
         <ul class="award-list">
-            <li><strong>武昱</strong>(1/4): 外测系统精度鉴定综合处理软件, 中国人民解放军第xx试验训练基地, 科技进步一等奖, 2011.</li>
-            <li><strong>武昱</strong>(1/2): 中国管理科学第十八届学术年会优秀报告论文奖, 中国优选法统筹法与经济学研究会, 2016.</li>
-            <li>黄思明, <strong>武昱</strong>: 基于变方向乘子法的大规模线性规划求解软件, 2019SR0674376, 2019 (软件著作权).</li>
+            <li>
+                <strong>武昱</strong>(1/4)：外测系统精度鉴定综合处理软件，中国人民解放军第xx试验训练基地，科技进步一等奖，2011。
+            </li>
+            <li>
+                <strong>武昱</strong>(1/2)：中国管理科学第十八届学术年会优秀报告论文奖，中国优选法统筹法与经济学研究会，2016。
+            </li>
+            <li>
+                黄思明，<strong>武昱</strong>：基于变方向乘子法的大规模线性规划求解软件，2019SR0674376，2019（软件著作权）。
+            </li>
         </ul>
     </section>
 
-    <!-- 荣誉奖励 -->
     <section id="awards">
         <h2>荣誉奖励</h2>
         <ul class="award-list">
@@ -361,39 +585,59 @@
         </ul>
     </section>
 
-    <!-- 学术服务 -->
     <section id="service">
         <h2>学术服务</h2>
         <ul class="service-list">
-            <li>担任 Transportation Science、EJOR、IEEE Transactions on Cybernetics、IJEST、IJITDM、IEEE Intelligent Transportation Systems Magazine、Industrial Management & Data Systems、IEEE Access、Computers & Operations Research、IET Intelligent Transportation Systems、CASE、IEEE T-ITS 等期刊及国际会议审稿人。</li>
+            <li>
+                担任 Transportation Science、EJOR、IEEE Transactions on Cybernetics、IJEST、IJITDM、IEEE Intelligent Transportation Systems Magazine、Industrial Management & Data Systems、IEEE Access、Computers & Operations Research、IET Intelligent Transportation Systems、CASE、IEEE T-ITS 等期刊及国际会议审稿人。
+            </li>
         </ul>
     </section>
 
-    <!-- 教学及学生指导 -->
     <section id="teaching">
         <h2>教学及学生指导</h2>
         <ul>
-            <li>二年级本科生《机器学习》课程、三年级本科生《物流系统分析（英文）》课程和《大数据分析》课程、学术型研究生《学术素养》课程中的“研究问题”和“研究方法”两个模块、研究生课程《工程管理前沿》。2023年指导三位本科生毕业设计，三人均获得组内优秀（20%），其中一人获得西南交大百篇本科生优秀毕业设计（10/547）。2023年指导SRTP项目两项，一项省级项目，一项校级项目；指导学生参加大学生物流设计大赛，分别获得国家一等奖和四川省一等奖。</li>
+            <li>
+                二年级本科生《机器学习》课程、三年级本科生《物流系统分析（英文）》课程和《大数据分析》课程、学术型研究生《学术素养》课程中的“研究问题”和“研究方法”两个模块、研究生课程《工程管理前沿》。2023年指导三位本科生毕业设计，三人均获得组内优秀（20%），其中一人获得西南交大百篇本科生优秀毕业设计（10/547）。2023年指导SRTP项目两项，一项省级项目，一项校级项目；指导学生参加大学生物流设计大赛，分别获得国家一等奖和四川省一等奖。
+            </li>
         </ul>
     </section>
 
-    <!-- 联系方式 -->
     <section id="contact">
-        <p>邮箱：<a href="mailto:wuyu14@mails.ucas.edu.cn">wuyu14@mails.ucas.edu.cn</a></p>
-        <p>单位主页：<a href="https://faculty.cdut.edu.cn/wuyu/zh_CN/index.htm" target="_blank">成都理工大学个人主页</a></p>
+        <p>
+            邮箱：
+            <a href="mailto:wuyu14@mails.ucas.edu.cn">
+                wuyu14@mails.ucas.edu.cn
+            </a>
+        </p>
+
+        <p>
+            单位主页：
+            <a
+                href="https://faculty.cdut.edu.cn/wuyu/zh_CN/index.htm"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                成都理工大学个人主页
+            </a>
+        </p>
     </section>
+
 </div>
-<!-- 底部全宽照片，顶部渐入 -->
+
 <div class="bottom-photo">
     <img src="123.png" alt="在多伦多大学与爱因斯坦合影">
 </div>
+
 <footer>
     <div class="container">
         © 2026 武昱 · Powered by GitHub Pages
     </div>
 </footer>
+
 <script src="assets/vendor/d3.min.js"></script>
 <script src="assets/vendor/topojson-client.min.js"></script>
 <script src="visitor-map.js"></script>
+
 </body>
 </html>

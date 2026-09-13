@@ -4,7 +4,7 @@
     const VISITOR_API_URL = "https://yuwu-visitor-map-api.maxyuwu2023.workers.dev";
     const WORLD_DATA_URL = "assets/vendor/countries-110m.json";
     const DESKTOP_MAP_WIDTH_RATIO = 0.84;
-    const VISIT_DOT_RADIUS = 2.25;
+    const VISIT_DOT_RADIUS = 2.0;
     const MAX_DOTS_PER_LOCATION = 2000;
 
     const host = document.getElementById("visitor-map");
@@ -106,7 +106,7 @@
     }
 
     function clusterRadius(views) {
-        return Math.min(90, VISIT_DOT_RADIUS + 2.7 * Math.sqrt(Math.max(1, views)));
+        return Math.min(58, VISIT_DOT_RADIUS + 1.65 * Math.sqrt(Math.max(1, views)));
     }
 
     function drawVisitDots(point) {
@@ -118,7 +118,7 @@
         ctx.save();
         ctx.fillStyle = "rgba(255, 47, 57, 0.96)";
         for (let index = 0; index < dotCount; index += 1) {
-            const distance = index === 0 ? 0 : 2.7 * Math.sqrt(index);
+            const distance = index === 0 ? 0 : 1.65 * Math.sqrt(index);
             const angle = index * 2.399963229728653;
             const x = center[0] + Math.cos(angle) * distance;
             const y = center[1] + Math.sin(angle) * distance;

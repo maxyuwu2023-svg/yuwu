@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu Wu - Academic Homepage</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f7f9fc;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+
+        .world-hero {
+            min-height: 320px;
+            position: relative;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            isolation: isolate;
+            color: #fff;
+            text-align: center;
+            background:
+                radial-gradient(circle at 50% 35%, rgba(17, 76, 120, 0.28), transparent 52%),
+                linear-gradient(180deg, #020711 0%, #061426 58%, #071a2c 100%);
+        }
+        .world-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                linear-gradient(180deg, rgba(0, 4, 12, 0.16), rgba(0, 5, 16, 0.34)),
+                radial-gradient(ellipse at center, transparent 28%, rgba(0, 3, 10, 0.45) 100%);
+        }
+        #visitor-map {
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+        }
+        #visitor-map canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .language-switch {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 6px 12px;
+            border: 1px solid rgba(185, 220, 245, 0.32);
+            border-radius: 999px;
+            background: rgba(2, 10, 22, 0.62);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            font-size: 0.82rem;
+            line-height: 1.4;
+        }
+        .language-switch a {
+            color: rgba(224, 244, 255, 0.72);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .language-switch a:hover,
+        .language-switch a.active { color: #fff; }
+        .language-switch a.active { font-weight: 700; }
+        .language-switch span { color: rgba(185, 220, 245, 0.35); }
+        .hero-content {
+            padding: 58px 20px 44px;
+            text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+            transform: translateY(55px);
+        }
+        .world-hero h1 {
+            font-size: clamp(2rem, 3.4vw, 3rem);
+            letter-spacing: 0.025em;
+            margin-bottom: 8px;
+            transform: translateY(16px);
+        }
+        .world-hero p {
+            opacity: 0.96;
+            font-size: 1.08em;
+            transform: translateY(16px);
+        }
+        .world-hero .visit-summary {
+            min-height: 24px;
+            margin-top: 46px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.78rem;
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: 0.08em;
+            color: rgba(224, 244, 255, 0.84);
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.9);
+            transform: none;
+        }
+        .world-hero .visit-summary[hidden] { display: none; }
+        .map-tooltip {
+            position: absolute;
+            z-index: 3;
+            max-width: 220px;
+            padding: 7px 10px;
+            border: 1px solid rgba(128, 218, 255, 0.24);
+            border-radius: 7px;
+            color: #effaff;
+            background: rgba(2, 10, 22, 0.9);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.32);
+            font-size: 12px;
+            line-height: 1.45;
+            pointer-events: none;
+            transform: translate(-50%, calc(-100% - 12px));
+        }
+        section {
+            background: #fff;
+            margin: 24px 0;
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        section h2 {
+            font-size: 1.4em;
+            color: #1e3c72;
+            border-left: 4px solid #2a5298;
+            padding-left: 12px;
+            margin-bottom: 18px;
+        }
+        h3 {
+            font-size: 1.1em;
+            color: #2a5298;
+            margin: 18px 0 8px;
+        }
+        ul { list-style: none; }
+        li { padding: 6px 0; }
+        .paper-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .paper-list li:last-child { border-bottom: none; }
+        .paper-list .title { font-weight: 600; }
+        .paper-list .meta { color: #555; font-size: 0.95em; }
+        .paper-list a { color: #2a5298; text-decoration: none; word-break: break-all; }
+        .paper-list a:hover { text-decoration: underline; }
+        .award-list li, .service-list li, .skill-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .award-list li:last-child, .service-list li:last-child, .skill-list li:last-child {
+            border-bottom: none;
+        }
+        .timeline-item {
+            margin-bottom: 12px;
+            padding-left: 16px;
+            border-left: 3px solid #2a5298;
+        }
+        .timeline-item .time {
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        .bottom-photo {
+            width: 100%;
+            position: relative;
+            margin-top: 40px;
+            line-height: 0;
+            overflow: hidden;
+        }
+        .bottom-photo::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to bottom, #f7f9fc 0%, rgba(247,249,252,0) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .bottom-photo img {
+            width: 100%;
+            height: auto;
+            max-height: 520px;
+            object-fit: cover;
+            object-position: center 30%;
+            display: block;
+        }
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #888;
+            font-size: 0.9em;
+            background: #f7f9fc;
+            position: relative;
+            z-index: 2;
+        }
+        @media (max-width: 600px) {
+            .world-hero { min-height: 235px; }
+            .language-switch { top: 12px; right: 12px; font-size: 0.74rem; }
+            .world-hero h1 { font-size: 1.75em; }
+            .hero-content {
+                padding: 46px 18px 34px;
+                transform: translateY(32px);
+            }
+            .world-hero h1,
+            .world-hero p { transform: translateY(10px); }
+            .world-hero .visit-summary { margin-top: 32px; font-size: 0.68rem; }
+            section { padding: 20px; }
+            .bottom-photo img { max-height: 320px; }
+            .bottom-photo::before { height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="world-hero">
+    <div id="visitor-map" aria-hidden="true"><canvas></canvas></div>
+    <nav class="language-switch" aria-label="Language selection">
+        <a href="./" lang="zh-CN">中文</a>
+        <span aria-hidden="true">|</span>
+        <a href="en.html" class="active" lang="en" aria-current="page">English</a>
+    </nav>
+    <div class="container hero-content">
+        <h1>Yu WU</h1>
+        <p>Professor, College of Management Science, Chengdu University of Technology</p>
+        <div id="visit-summary" class="visit-summary" hidden></div>
+    </div>
+</header>
+
+<div class="container">
+    <section id="about">
+        <h2>About Me</h2>
+        <p>
+            Yu Wu is a professor in the College of Management Science at Chengdu University of Technology. He holds a Ph.D. in Management Science and Engineering from the University of Chinese Academy of Sciences and was a jointly trained doctoral researcher at the University of Toronto. He is a lifetime member of the Operations Research Society of China and a member of the China Computer Federation (CCF). He received his bachelor's, master's, and doctoral degrees from Xi'an Jiaotong University, Aalborg University, and the University of Chinese Academy of Sciences, respectively. He previously served as an engineer in a research unit of the People's Liberation Army and as a Research Associate at the University of Pittsburgh. His research focuses on operations research, optimization, machine-learning theory, and their applications. He has delivered invited talks at academic institutions including the University of Essex.
+            His work has appeared in international and Chinese journals and conferences including COR, FSM, IJSSOL, IEEE T-ITS, JOCO, JITS, APJOR, JORSC, IET ITS, Chinese Journal of Management Science, Computer Science, TAMC, and ASE. In 95% of his publications, he is both the first author and the corresponding author.
+        </p>
+    </section>
+
+    <section id="education">
+        <h2>Education</h2>
+        <div class="timeline-item">
+            <div class="time">Sep. 2014 — Jul. 2019</div>
+            <div>University of Chinese Academy of Sciences · Ph.D. in Management Science and Engineering</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Sep. 2017 — Sep. 2018</div>
+            <div>Rotman School of Management, University of Toronto · Jointly Trained Doctoral Researcher (Advisors: Igor Averbakh, Opher Baron, and Andre Cire)</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Sep. 2014 — Jun. 2016</div>
+            <div>Aalborg University, Denmark · M.Sc. in Economics and Business Administration</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Sep. 2005 — Jul. 2009</div>
+            <div>Xi'an Jiaotong University · B.Eng. in Mechanical Engineering and Automation</div>
+        </div>
+    </section>
+
+    <section id="work">
+        <h2>Professional Experience</h2>
+        <div class="timeline-item">
+            <div class="time">Mar. 2025 — Present</div>
+            <div>College of Management Science, Chengdu University of Technology · Professor</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Nov. 2024 — Mar. 2025</div>
+            <div>College of Management Science, Chengdu University of Technology · Lecturer (Mount Everest Talent Program)</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Oct. 2019 — Oct. 2024</div>
+            <div>Department of Logistics Management, School of Transportation and Logistics, Southwest Jiaotong University · Lecturer</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Oct. 2018 — Apr. 2019</div>
+            <div>Department of Industrial Engineering, University of Pittsburgh · Research Associate (Advisors: Bo Zeng and Egon Balas, CMU)</div>
+        </div>
+        <div class="timeline-item">
+            <div class="time">Jul. 2009 — Jan. 2014</div>
+            <div>Research Unit of the People's Liberation Army · Engineer in Optimization Algorithm Design and Measurement-and-Control Data Processing</div>
+        </div>
+    </section>
+
+    <section id="research">
+        <h2>Research Interests</h2>
+        <ul>
+            <li><strong>Management Science:</strong> applied probability, integer programming, solution methods for high-dimensional Markov decision processes, machine learning, online algorithms, and approximation algorithms.</li>
+            <li><strong>Operations Management:</strong> scheduling, location, routing, pricing, and packing problems in logistics, transportation, healthcare, and e-commerce.</li>
+            <li><strong>Current Focus:</strong> (1) solving large-scale and complex integer programs; and (2) sequential decision-making under uncertainty, with particular emphasis on methods and theory for overcoming the curse of dimensionality.</li>
+        </ul>
+    </section>
+
+    <section id="papers">
+        <h2>Publications</h2>
+        <p style="color:#666; margin-bottom:16px; font-size:0.95em;">
+            My name is shown in bold; * denotes the corresponding author.
+        </p>
+        <ul class="paper-list">
+            <li><div class="title"><strong>Yu Wu*</strong>. Rethinking AI Programming through Baidu Famou: Dilemmas and Possible Ways Forward in the Era of Statistical Inference. Computer Science, 2026, 53(11), forthcoming. (In Chinese)</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Yuchen Yang. From Statistical Code Generation to Correct-by-Construction AI Programming: A Basis-Function Composition Framework, accepted by the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE 2026, ASYDE Workshop). DOI: <a href="https://doi.org/10.1145/3843777.3844528" target="_blank" rel="noopener noreferrer">10.1145/3843777.3844528</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>. A Customized Perfect Hashing Scheme for MDPs with Structured Set-Based State Representations: Achieving O(1) Query Complexity with Zero Memory Waste. Accepted by Journal of Combinatorial Optimization.</div></li>
+            <li><div class="title"><strong>Yu Wu</strong>, Chengjie Li*, Ming Jian. A More Realistic Variant of CVRP: Methodology and A Case Study. Journal of Intelligent Transportation Systems, 1–26. DOI: <a href="https://doi.org/10.1080/15472450.2025.2577742" target="_blank" rel="noopener noreferrer">10.1080/15472450.2025.2577742</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Xiaoping Qiu. A Lookup Table Design Method: Achieving O(1)-query Complexity and No Memory Waste. Lecture Notes in Computer Science 16084, 63–76. DOI: <a href="https://doi.org/10.1007/978-981-95-4839-2_6" target="_blank" rel="noopener noreferrer">10.1007/978-981-95-4839-2_6</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>. A Dynamic and Stochastic Cumulative Capacitated Vehicle Routing Problem. Asia-Pacific Journal of Operational Research, 2024. DOI: <a href="https://doi.org/10.1142/S0217595924500088" target="_blank" rel="noopener noreferrer">10.1142/S0217595924500088</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Bo Zeng, Ming Jian. ADP- and Rollout-based Dynamic Vehicle Routing for Pick-up Service via Budgeting Capacity. Flexible Services and Manufacturing Journal, 1–45, 2024. DOI: <a href="https://doi.org/10.1007/s10696-024-09551-z" target="_blank" rel="noopener noreferrer">10.1007/s10696-024-09551-z</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Bo Zeng. Dynamic Parcel Pick-up Routing Problem with Prioritized Customers and Constrained Capacity via Lower-bound-based Rollout Approach. Computers & Operations Research, 154 (2023): 106176. DOI: <a href="https://doi.org/10.1016/j.cor.2023.106176" target="_blank" rel="noopener noreferrer">10.1016/j.cor.2023.106176</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Ming Jian. State Aggregation and Lower Bound-Based ADP Approach for Dynamic Pick-Up Routing Problem With Capacity Constraint. IEEE Transactions on Intelligent Transportation Systems, 2024. DOI: <a href="https://doi.org/10.1109/TITS.2024.3357060" target="_blank" rel="noopener noreferrer">10.1109/TITS.2024.3357060</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>. Sequential learning based re-optimization approaches for less model-based dynamic pick-up routing problem. International Journal of Systems Science: Operations & Logistics, 11(1), 2024. DOI: <a href="https://doi.org/10.1080/23302674.2023.2291201" target="_blank" rel="noopener noreferrer">10.1080/23302674.2023.2291201</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Xiaoping Qiu*. GRASP-based request allocation and MDP-based vehicle routing in home pick-up service with service continuity consideration. IET Intelligent Transport Systems, 18(2), 2024. DOI: <a href="https://doi.org/10.1049/itr2.12454" target="_blank" rel="noopener noreferrer">10.1049/itr2.12454</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Bo Zeng. Properties related with conditional expectation for a non-homogeneous Poisson Process. Journal of the Operations Research Society of China, 2024. DOI: <a href="https://doi.org/10.1007/s40305-023-00527-8" target="_blank" rel="noopener noreferrer">10.1007/s40305-023-00527-8</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>. Analysis on Decision Making for Secretary Problem with partial Look-ahead Privilege. International Journal of Mathematics in Operational Research, 27(3), 2024, 305–316. DOI: <a href="https://doi.org/10.1504/IJMOR.2024.138054" target="_blank" rel="noopener noreferrer">10.1504/IJMOR.2024.138054</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu</strong>, Bo Zeng, Siming Huang*. A dynamic strategy for home pick-up service with uncertain customer requests and its implementation. Sustainability, 11(7), 2019. DOI: <a href="https://doi.org/10.3390/su11072060" target="_blank" rel="noopener noreferrer">10.3390/su11072060</a>.</div></li>
+            <li><div class="title"><strong>Yu Wu*</strong>, Siming Huang. Sparse Storage for Ultra-large-scale Linear Programming and Detection and Processing of Proportional Rows in Preprocessing. Chinese Journal of Management Science, 2017, 25(10): 100–108. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2017.10.011" target="_blank" rel="noopener noreferrer">10.16381/j.cnki.issn1003-207x.2017.10.011</a>. (In Chinese)</div></li>
+            <li><div class="title">Yanjie Hu, Siming Huang, N. Adrien, <strong>Yu Wu</strong>. An Analysis of the Application of Duality in Linear Programming Preprocessing. Chinese Journal of Management Science, 2016, 24(12): 117–126. DOI: <a href="https://doi.org/10.16381/j.cnki.issn1003-207x.2016.12.014" target="_blank" rel="noopener noreferrer">10.16381/j.cnki.issn1003-207x.2016.12.014</a>. (In Chinese)</div></li>
+        </ul>
+    </section>
+
+    <section id="other">
+        <h2>Other Academic Achievements</h2>
+        <ul class="award-list">
+            <li><strong>Yu Wu</strong> (1/4). Integrated Processing Software for Accuracy Evaluation of an External Measurement System. First Prize for Scientific and Technological Progress, a PLA Test and Training Base, 2011.</li>
+            <li><strong>Yu Wu</strong> (1/2). Outstanding Presentation Paper Award, 18th Annual Conference of the Chinese Academy of Management Science, 2016.</li>
+            <li>Siming Huang, <strong>Yu Wu</strong>. Large-Scale Linear Programming Solver Based on the Alternating Direction Method of Multipliers. Software Copyright No. 2019SR0674376, 2019.</li>
+        </ul>
+    </section>
+
+    <section id="awards">
+        <h2>Honors and Awards</h2>
+        <ul class="award-list">
+            <li>Advisor of one of Southwest Jiaotong University's 100 Outstanding Undergraduate Theses, 2023</li>
+            <li>Outstanding Advisor Award, First Prize, Second Sichuan Provincial Undergraduate Logistics Design Competition, 2022</li>
+            <li>Outstanding Individual for Undergraduate Admissions Outreach, Southwest Jiaotong University</li>
+            <li>Gold Medal Instructor, 6th RRS Maker Training Camp, 2021</li>
+            <li>Outstanding Advisor, First Prize, 7th National Undergraduate Logistics Design Competition, 2021</li>
+            <li>China Scholarship Council Scholarship, 2017</li>
+            <li>Third Prize and Team Leader, China Postgraduate Mathematical Contest in Modeling, 2014</li>
+            <li>Session Co-chair, Chinese Control Conference (CCC 2013)</li>
+            <li>Collective Second-Class Merit awarded to a technical office of a PLA unit</li>
+            <li>Second Prize, China Undergraduate Mathematical Contest in Modeling</li>
+            <li>Silver Award, Xi'an Jiaotong University Programming Contest (highest-ranked non-computer-science participant)</li>
+            <li>Outstanding Social Activities Participant, Xi'an Jiaotong University</li>
+            <li>Fast Gear Scholarship, Xi'an Jiaotong University</li>
+        </ul>
+    </section>
+
+    <section id="service">
+        <h2>Academic Service</h2>
+        <ul class="service-list">
+            <li>Reviewer for journals and international conferences including Transportation Science, European Journal of Operational Research, IEEE Transactions on Cybernetics, International Journal of Engineering Science and Technology, International Journal of Information Technology & Decision Making, IEEE Intelligent Transportation Systems Magazine, Industrial Management & Data Systems, IEEE Access, Computers & Operations Research, IET Intelligent Transport Systems, CASE, and IEEE Transactions on Intelligent Transportation Systems.</li>
+        </ul>
+    </section>
+
+    <section id="teaching">
+        <h2>Teaching and Student Supervision</h2>
+        <ul>
+            <li>I teach Machine Learning to second-year undergraduates; Logistics System Analysis (in English) and Big Data Analytics to third-year undergraduates; the Research Questions and Research Methods modules of Academic Literacy for research postgraduates; and Frontiers in Engineering Management for graduate students. In 2023, I supervised three undergraduate theses, all of which were rated outstanding within their group (top 20%); one was selected among Southwest Jiaotong University's 100 Outstanding Undergraduate Theses (10 out of 547). I also supervised two Student Research Training Program projects in 2023, one at the provincial level and one at the university level. Students under my supervision won first prizes in both the national and Sichuan provincial undergraduate logistics design competitions.</li>
+        </ul>
+    </section>
+
+    <section id="contact">
+        <p>Email: <a href="mailto:wuyu14@mails.ucas.edu.cn">wuyu14@mails.ucas.edu.cn</a></p>
+        <p>Institutional profile: <a href="https://faculty.cdut.edu.cn/wuyu/zh_CN/index.htm" target="_blank" rel="noopener noreferrer">Chengdu University of Technology Faculty Homepage</a></p>
+    </section>
+</div>
+
+<div class="bottom-photo">
+    <img src="123.png" alt="At the University of Toronto with Albert Einstein">
+</div>
+
+<footer>
+    <div class="container">© 2026 Yu Wu · Powered by GitHub Pages</div>
+</footer>
+
+<script src="assets/vendor/d3.min.js"></script>
+<script src="assets/vendor/topojson-client.min.js"></script>
+<script src="visitor-map.js"></script>
+</body>
+</html>
